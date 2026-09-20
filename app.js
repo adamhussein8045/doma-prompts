@@ -1968,114 +1968,64 @@ if (authSignUpTab) {
 ========================================================= */
 
 async function handleAuthSubmit(event) {
-
   event.preventDefault();
 
-
   if (!supabaseClient) {
-
-    showToast(
-      "Supabase is not available"
+    setAuthMessage(
+      "Supabase is not available.",
+      "error"
     );
-
     return;
   }
 
-
-  const email =
-    authEmail?.value.trim() ||
-    "";
-
-  const password =
-    authPassword?.value ||
-    "";
-
-  const displayName =
-    authDisplayName?.value.trim() ||
-    "";
-
+  const email = authEmail?.value.trim() || "";
+  const password = authPassword?.value || "";
+  const displayName = authDisplayName?.value.trim() || "";
 
   if (!email || !password) {
-
     setAuthMessage(
       "Enter your email and password.",
       "error"
     );
-
     return;
   }
 
-
-  if (
-    authMode === "signup" &&
-    !displayName
-  ) {
-
+  if (authMode === "signup" && !displayName) {
     setAuthMessage(
       "Enter your display name.",
       "error"
     );
-
     return;
   }
 
-
   if (authSubmitButton) {
-
-    authSubmitButton.disabled =
-      true;
-
+    authSubmitButton.disabled = true;
     authSubmitButton.textContent =
       authMode === "signup"
         ? "Creating..."
         : "Signing in...";
   }
 
-
   setAuthMessage("");
 
-
   try {
-
-    /* =====================
-       SIGN UP
-    ===================== */
-
-    if (
-      authMode === "signup"
-    ) {
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient.auth.signUp(
-          {
-            email,
-            password,
-
-            options: {
-              data: {
-                display_name:
-                  displayName
-              }
+    if (authMode === "signup") {
+      const { data, error } =
+        await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              display_name: displayName
             }
           }
-        );
-
+        });
 
       if (error) {
         throw error;
       }
 
-
-      /*
-        Email confirmation enabled:
-        Supabase returns no session.
-      */
-
       if (!data.session) {
-
         setAuthMessage(
           "Account created. Check your email to confirm your account, then sign in.",
           "success"
@@ -2084,107 +2034,76 @@ async function handleAuthSubmit(event) {
         return;
       }
 
-
-      currentSession =
-        data.session;
-
-      currentUser =
-        data.user;
-
+      currentSession = data.session;
+      currentUser = data.user;
 
       closeAuthModal();
-
       showPage("home");
 
       showToast(
         "Account created successfully"
       );
 
-
       setTimeout(() => {
+        loadProfile().catch((error) => {
+          console.error(
+            "Background profile error:",
+            error
+          );
+        });
 
-        loadProfile().catch(
-          console.error
-        );
-
-        loadPrompts().catch(
-          console.error
-        );
-
+        loadPrompts().catch((error) => {
+          console.error(
+            "Background prompts error:",
+            error
+          );
+        });
       }, 0);
-
 
       return;
     }
 
-
-    /* =====================
-       SIGN IN
-    ===================== */
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth.signInWithPassword(
-        {
-          email,
-          password
-        }
-      );
-
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
 
     if (error) {
       throw error;
     }
 
-
-    currentSession =
-      data.session;
-
-    currentUser =
-      data.user;
-
-
-    /*
-      IMPORTANT:
-      Close auth immediately.
-    */
+    currentSession = data.session;
+    currentUser = data.user;
 
     closeAuthModal();
-
     showPage("home");
 
     showToast(
       "Signed in successfully"
     );
 
-
-    /*
-      Load private data after
-      the UI is already unlocked.
-    */
-
     setTimeout(() => {
+      loadProfile().catch((error) => {
+        console.error(
+          "Background profile error:",
+          error
+        );
+      });
 
-      loadProfile().catch(
-        console.error
-      );
-
-      loadPrompts().catch(
-        console.error
-      );
-
+      loadPrompts().catch((error) => {
+        console.error(
+          "Background prompts error:",
+          error
+        );
+      });
     }, 0);
 
-
   } catch (error) {
-
     console.error(
       "Authentication error:",
       error
     );
-
 
     setAuthMessage(
       error?.message ||
@@ -2193,19 +2112,14 @@ async function handleAuthSubmit(event) {
     );
 
   } finally {
-
     if (authSubmitButton) {
-
-      authSubmitButton.disabled =
-        false;
+      authSubmitButton.disabled = false;
 
       authSubmitButton.textContent =
         authMode === "signup"
           ? "Create Account"
           : "Sign In";
-
     }
-
   }
 }
 
