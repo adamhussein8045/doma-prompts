@@ -13,57 +13,148 @@
     content="Doma Prompts — Turn ideas into powerful prompts."
   />
 
-  <meta name="theme-color" content="#08090d" />
+  <meta
+    name="theme-color"
+    content="#08090d"
+  />
+
+  <meta
+    name="application-name"
+    content="Doma Prompts"
+  />
 
   <title>Doma Prompts — Turn Ideas Into Powerful Prompts</title>
 
-  <link rel="stylesheet" href="style.css" />
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  />
 </head>
 
 <body>
 
-  <!-- BACKGROUND -->
+  <!-- =====================================================
+       BACKGROUND
+  ====================================================== -->
+
   <div class="background">
     <div class="orb orb-one"></div>
     <div class="orb orb-two"></div>
+    <div class="orb orb-three"></div>
     <div class="grid"></div>
   </div>
 
 
-  <!-- AUTH GATE -->
-  <div id="authGate" class="auth-gate">
+  <!-- =====================================================
+       AUTH MODAL
+  ====================================================== -->
+
+  <div
+    class="auth-modal"
+    id="authModal"
+  >
 
     <div class="auth-card">
 
       <div class="auth-brand">
-        <span class="logo-mark">D</span>
-        <span>Doma Prompts</span>
+
+        <div class="auth-logo">
+          D
+        </div>
+
+        <div>
+          <strong>Doma Prompts</strong>
+
+          <span>
+            Turn ideas into powerful prompts.
+          </span>
+        </div>
+
       </div>
+
 
       <div class="auth-heading">
-        <span class="eyebrow">PRIVATE WORKSPACE</span>
 
-        <h1 id="authTitle">
-          Welcome back.
+        <h1>
+          Welcome to Doma Prompts
         </h1>
 
-        <p id="authDescription">
-          Sign in to access your private prompt workspace.
+        <p>
+          Sign in to save and manage your prompts privately.
         </p>
+
       </div>
 
 
-      <!-- LOGIN -->
-      <form id="loginForm" class="auth-form">
+      <!-- AUTH TABS -->
 
-        <div class="form-group">
+      <div class="auth-tabs">
 
-          <label for="loginEmail">
+        <button
+          type="button"
+          id="authSignInTab"
+          class="active"
+        >
+          Sign In
+        </button>
+
+        <button
+          type="button"
+          id="authSignUpTab"
+        >
+          Create Account
+        </button>
+
+      </div>
+
+
+      <!-- AUTH FORM -->
+
+      <form id="authForm">
+
+        <div
+          class="auth-field"
+          id="authDisplayNameWrapper"
+        >
+
+          <label for="authDisplayName">
+            Display Name
+          </label>
+
+          <input
+            id="authDisplayName"
+            type="text"
+            placeholder="Your name"
+            autocomplete="name"
+          />
+
+        </div>
+
+
+        <div class="auth-field">
+
+          <label for="authEmail">
             Email
           </label>
 
           <input
-            id="loginEmail"
+            id="authEmail"
             type="email"
             placeholder="you@example.com"
             autocomplete="email"
@@ -73,14 +164,14 @@
         </div>
 
 
-        <div class="form-group">
+        <div class="auth-field">
 
-          <label for="loginPassword">
+          <label for="authPassword">
             Password
           </label>
 
           <input
-            id="loginPassword"
+            id="authPassword"
             type="password"
             placeholder="Your password"
             autocomplete="current-password"
@@ -90,10 +181,16 @@
         </div>
 
 
+        <div
+          id="authMessage"
+          class="auth-message"
+        ></div>
+
+
         <button
-          type="submit"
+          id="authSubmitButton"
           class="auth-submit"
-          id="loginButton"
+          type="submit"
         >
           Sign In
         </button>
@@ -101,126 +198,60 @@
       </form>
 
 
-      <!-- SIGN UP -->
-      <form id="signupForm" class="auth-form hidden">
-
-        <div class="form-group">
-
-          <label for="signupName">
-            Display name
-          </label>
-
-          <input
-            id="signupName"
-            type="text"
-            placeholder="Your name"
-            autocomplete="name"
-            required
-          />
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label for="signupEmail">
-            Email
-          </label>
-
-          <input
-            id="signupEmail"
-            type="email"
-            placeholder="you@example.com"
-            autocomplete="email"
-            required
-          />
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label for="signupPassword">
-            Password
-          </label>
-
-          <input
-            id="signupPassword"
-            type="password"
-            placeholder="At least 6 characters"
-            autocomplete="new-password"
-            minlength="6"
-            required
-          />
-
-        </div>
-
-
-        <button
-          type="submit"
-          class="auth-submit"
-          id="signupButton"
-        >
-          Create Account
-        </button>
-
-      </form>
-
-
-      <div class="auth-switch">
-
-        <span id="authSwitchText">
-          Don't have an account?
-        </span>
-
-        <button
-          type="button"
-          id="authSwitchButton"
-        >
-          Create account
-        </button>
-
-      </div>
+      <p class="auth-footer">
+        Your prompts and profile are private to your account.
+      </p>
 
     </div>
 
   </div>
 
 
-  <!-- NAVBAR -->
+  <!-- =====================================================
+       NAVBAR
+  ====================================================== -->
+
   <header class="navbar">
 
     <div class="nav-inner">
 
-      <a
-        href="#"
-        class="logo"
-        data-page="home"
+      <button
+        class="brand"
+        type="button"
+        data-nav="home"
       >
-        <span class="logo-mark">D</span>
-        <span>Doma Prompts</span>
-      </a>
+
+        <span class="brand-mark">
+          D
+        </span>
+
+        <span class="brand-text">
+          Doma Prompts
+        </span>
+
+      </button>
 
 
       <nav class="nav-links">
 
         <button
-          class="nav-link active"
-          data-page="home"
+          type="button"
+          data-nav="home"
+          class="active"
         >
           Generate
         </button>
 
         <button
-          class="nav-link"
-          data-page="prompts"
+          type="button"
+          data-nav="prompts"
         >
           My Prompts
         </button>
 
         <button
-          class="nav-link"
-          data-page="profile"
+          type="button"
+          data-nav="profile"
         >
           Profile
         </button>
@@ -230,7 +261,8 @@
 
       <button
         class="nav-cta"
-        data-page="home"
+        type="button"
+        data-page-link="home"
       >
         Create Prompt
       </button>
@@ -240,109 +272,103 @@
   </header>
 
 
-  <!-- MAIN -->
+  <!-- =====================================================
+       MAIN
+  ====================================================== -->
+
   <main>
 
-    <!-- HOME -->
+
+    <!-- ===================================================
+         HOME / GENERATOR
+    ==================================================== -->
+
     <section
-      class="page active-page"
-      id="homePage"
+      class="page active"
+      data-page="home"
     >
 
       <!-- HERO -->
+
       <div class="hero">
 
-        <div class="badge">
-
-          <span class="badge-dot"></span>
-
-          AI Prompt Workspace
-
+        <div class="hero-badge">
+          AI PROMPT WORKSPACE
         </div>
 
-
         <h1>
-
-          Your idea.
-
-          <span>
-            A better prompt.
-          </span>
-
+          Turn ideas into
+          <span>powerful prompts.</span>
         </h1>
 
-
         <p>
-          Turn simple ideas into structured, detailed and powerful
-          prompts designed to get better results from AI.
+          Describe what you want to build and Doma Prompts
+          transforms your idea into a clear, detailed,
+          professional AI prompt.
         </p>
 
       </div>
 
 
       <!-- GENERATOR -->
+
       <div class="generator-layout">
 
-        <!-- LEFT -->
-        <div class="generator-card">
+
+        <!-- INPUT CARD -->
+
+        <section class="card generator-card">
 
           <div class="card-header">
 
             <div>
 
               <span class="eyebrow">
-                PROMPT GENERATOR
+                YOUR IDEA
               </span>
 
               <h2>
-                Describe your idea
+                What do you want to create?
               </h2>
 
             </div>
 
-            <span class="step">
-              01
-            </span>
+            <button
+              id="clearButton"
+              type="button"
+              class="ghost-button"
+            >
+              Clear
+            </button>
 
           </div>
 
 
-          <div class="form-group">
-
-            <label for="idea">
-              What do you want to create?
-            </label>
+          <div class="textarea-wrapper">
 
             <textarea
               id="idea"
-              placeholder="Example: I want to create a modern website for a coding platform where users can learn HTML, CSS and JavaScript..."
+              rows="9"
+              placeholder="Example: I want to create a modern website for learning programming..."
             ></textarea>
 
-
-            <div class="textarea-footer">
-
-              <span id="characterCount">
-                0 characters
-              </span>
-
-              <button
-                id="clearIdea"
-                class="text-button"
-              >
-                Clear
-              </button>
-
+            <div class="character-counter">
+              <span id="characterCount">0</span>
+              characters
             </div>
 
           </div>
 
 
-          <div class="form-grid">
+          <!-- OPTIONS -->
 
-            <div class="form-group">
+          <div class="options-grid">
+
+
+            <div class="field">
 
               <label for="projectType">
-                Project type
+                Project Type
               </label>
 
               <select id="projectType">
@@ -351,32 +377,24 @@
                   Website
                 </option>
 
-                <option value="Web App">
-                  Web App
+                <option value="Web Application">
+                  Web Application
                 </option>
 
-                <option value="Mobile App">
-                  Mobile App
+                <option value="Mobile Application">
+                  Mobile Application
                 </option>
 
-                <option value="SaaS">
-                  SaaS
+                <option value="AI Application">
+                  AI Application
                 </option>
 
-                <option value="AI Tool">
-                  AI Tool
+                <option value="Software">
+                  Software
                 </option>
 
                 <option value="Game">
                   Game
-                </option>
-
-                <option value="API">
-                  API
-                </option>
-
-                <option value="Automation">
-                  Automation
                 </option>
 
                 <option value="Other">
@@ -388,36 +406,36 @@
             </div>
 
 
-            <div class="form-group">
+            <div class="field">
 
               <label for="style">
-                Design / Style
+                Design Style
               </label>
 
               <select id="style">
 
-                <option value="Modern">
-                  Modern
+                <option value="Modern, clean, premium">
+                  Modern & Premium
                 </option>
 
-                <option value="Minimal">
+                <option value="Minimal and elegant">
                   Minimal
                 </option>
 
-                <option value="Futuristic">
+                <option value="Futuristic and immersive">
                   Futuristic
                 </option>
 
-                <option value="Professional">
-                  Professional
+                <option value="Dark and cinematic">
+                  Dark & Cinematic
                 </option>
 
-                <option value="Creative">
+                <option value="Professional SaaS">
+                  Professional SaaS
+                </option>
+
+                <option value="Creative and experimental">
                   Creative
-                </option>
-
-                <option value="Dark">
-                  Dark
                 </option>
 
               </select>
@@ -425,7 +443,7 @@
             </div>
 
 
-            <div class="form-group">
+            <div class="field">
 
               <label for="technology">
                 Technology
@@ -433,8 +451,8 @@
 
               <select id="technology">
 
-                <option value="HTML, CSS and JavaScript">
-                  HTML, CSS and JavaScript
+                <option value="HTML, CSS, and JavaScript">
+                  HTML / CSS / JavaScript
                 </option>
 
                 <option value="React">
@@ -449,16 +467,16 @@
                   Vue
                 </option>
 
-                <option value="Node.js">
-                  Node.js
-                </option>
-
                 <option value="Python">
                   Python
                 </option>
 
-                <option value="Other">
-                  Other
+                <option value="Node.js">
+                  Node.js
+                </option>
+
+                <option value="Choose the most appropriate technology">
+                  Let AI Choose
                 </option>
 
               </select>
@@ -466,27 +484,30 @@
             </div>
 
 
-            <div class="form-group">
+            <div class="field">
 
-              <label for="detail">
-                Detail level
+              <label for="detailLevel">
+                Detail Level
               </label>
 
-              <select id="detail">
+              <select id="detailLevel">
 
-                <option value="Quick">
+                <option value="quick">
                   Quick
                 </option>
 
-                <option value="Standard" selected>
+                <option
+                  value="standard"
+                  selected
+                >
                   Standard
                 </option>
 
-                <option value="Professional">
+                <option value="professional">
                   Professional
                 </option>
 
-                <option value="Maximum Detail">
+                <option value="maximum">
                   Maximum Detail
                 </option>
 
@@ -498,88 +519,48 @@
 
 
           <button
-            class="generate-button"
             id="generateButton"
+            class="primary-button generate-button"
+            type="button"
           >
 
             <span>
-              Generate Powerful Prompt
+              Generate Prompt
             </span>
 
-            <span class="button-arrow">
+            <span>
               →
             </span>
 
           </button>
 
-        </div>
+        </section>
 
 
-        <!-- RIGHT -->
-        <div class="preview-card">
+        <!-- OUTPUT CARD -->
+
+        <section class="card output-card">
 
           <div class="card-header">
 
             <div>
 
               <span class="eyebrow">
-                OUTPUT
+                GENERATED PROMPT
               </span>
 
-              <h2>
-                Generated prompt
-              </h2>
-
-            </div>
-
-            <span
-              class="status"
-              id="outputStatus"
-            >
-              Ready
-            </span>
-
-          </div>
-
-
-          <div class="output-wrapper">
-
-            <div
-              id="emptyOutput"
-              class="empty-output"
-            >
-
-              <div class="empty-icon">
-                ✦
-              </div>
-
-              <h3>
-                Your prompt will appear here
-              </h3>
-
-              <p>
-                Describe your idea and choose your preferred
-                level of detail.
-              </p>
-
-            </div>
-
-
-            <div
-              id="generatedOutput"
-              class="generated-output hidden"
-            >
-
-              <div class="output-title-row">
+              <div class="title-row">
 
                 <input
-                  id="promptTitle"
-                  class="prompt-title"
+                  id="outputTitle"
+                  type="text"
                   value="Untitled Prompt"
+                  aria-label="Prompt title"
                 />
 
                 <button
-                  id="editTitle"
+                  id="titleEditButton"
+                  type="button"
                   class="icon-button"
                   title="Edit title"
                 >
@@ -588,17 +569,25 @@
 
               </div>
 
-              <pre id="promptText"></pre>
-
             </div>
 
           </div>
 
 
+          <div class="output-wrapper">
+
+            <pre id="output">Your generated prompt will appear here.</pre>
+
+          </div>
+
+
+          <!-- ACTIONS -->
+
           <div class="output-actions">
 
             <button
               id="copyButton"
+              type="button"
               class="secondary-button"
             >
               Copy
@@ -606,6 +595,7 @@
 
             <button
               id="improveButton"
+              type="button"
               class="secondary-button"
             >
               Improve
@@ -613,6 +603,7 @@
 
             <button
               id="regenerateButton"
+              type="button"
               class="secondary-button"
             >
               Regenerate
@@ -620,27 +611,31 @@
 
             <button
               id="saveButton"
-              class="primary-small"
+              type="button"
+              class="primary-button"
             >
               Save Prompt
             </button>
 
           </div>
 
-        </div>
+        </section>
 
       </div>
 
     </section>
 
 
-    <!-- MY PROMPTS -->
+    <!-- ===================================================
+         MY PROMPTS
+    ==================================================== -->
+
     <section
       class="page"
-      id="promptsPage"
+      data-page="prompts"
     >
 
-      <div class="section-heading">
+      <div class="page-header">
 
         <div>
 
@@ -648,22 +643,22 @@
             PRIVATE WORKSPACE
           </span>
 
-          <h2>
+          <h1>
             My Prompts
-          </h2>
+          </h1>
 
           <p>
-            Your saved prompts are private to your account.
+            Your saved prompts are available only to your account.
           </p>
 
         </div>
 
-
         <button
-          class="nav-cta"
-          data-page="home"
+          type="button"
+          class="primary-button"
+          data-page-link="home"
         >
-          + New Prompt
+          Create Prompt
         </button>
 
       </div>
@@ -674,26 +669,15 @@
         class="prompts-container"
       >
 
-        <div class="no-prompts">
-
-          <div class="empty-icon">
-            ◇
-          </div>
+        <div class="empty-state">
 
           <h3>
             No saved prompts yet
           </h3>
 
           <p>
-            Generate your first prompt and save it here.
+            Create your first prompt and save it here.
           </p>
-
-          <button
-            class="primary-small"
-            data-page="home"
-          >
-            Create First Prompt
-          </button>
 
         </div>
 
@@ -702,13 +686,16 @@
     </section>
 
 
-    <!-- PROFILE -->
+    <!-- ===================================================
+         PROFILE
+    ==================================================== -->
+
     <section
       class="page"
-      id="profilePage"
+      data-page="profile"
     >
 
-      <div class="section-heading">
+      <div class="page-header">
 
         <div>
 
@@ -716,12 +703,12 @@
             PRIVATE ACCOUNT
           </span>
 
-          <h2>
-            Your Profile
-          </h2>
+          <h1>
+            Profile
+          </h1>
 
           <p>
-            Your profile is private and belongs only to your account.
+            Manage your private Doma Prompts account.
           </p>
 
         </div>
@@ -729,19 +716,20 @@
       </div>
 
 
-      <div class="profile-card">
-
-        <div
-          class="profile-avatar"
-          id="profileAvatar"
-        >
-          D
-        </div>
+      <div class="profile-layout">
 
 
-        <div class="profile-info">
+        <!-- PROFILE CARD -->
 
-          <div class="account-email">
+        <section class="card profile-card">
+
+          <div class="profile-avatar">
+            D
+          </div>
+
+
+          <div class="profile-account">
+
             <span>
               Signed in as
             </span>
@@ -749,92 +737,116 @@
             <strong id="accountEmail">
               —
             </strong>
-          </div>
-
-
-          <label for="profileName">
-            Display name
-          </label>
-
-          <input
-            type="text"
-            id="profileName"
-            placeholder="Your name"
-          />
-
-
-          <label for="profileBio">
-            Bio
-          </label>
-
-          <textarea
-            id="profileBio"
-            placeholder="Tell something about yourself..."
-          ></textarea>
-
-
-          <div class="profile-actions">
-
-            <button
-              id="saveProfile"
-              class="primary-small"
-            >
-              Save Profile
-            </button>
-
-            <button
-              id="logoutButton"
-              class="logout-button"
-            >
-              Log Out
-            </button>
 
           </div>
 
-        </div>
 
-      </div>
+          <div class="field">
+
+            <label for="profileName">
+              Display Name
+            </label>
+
+            <input
+              id="profileName"
+              type="text"
+              placeholder="Your name"
+            />
+
+          </div>
 
 
-      <div class="stats-grid">
+          <div class="field">
 
-        <div class="stat-card">
+            <label for="profileBio">
+              Bio
+            </label>
 
-          <span>
-            Saved prompts
+            <textarea
+              id="profileBio"
+              rows="5"
+              placeholder="Tell us a little about yourself..."
+            ></textarea>
+
+          </div>
+
+
+          <button
+            id="saveProfileButton"
+            type="button"
+            class="primary-button"
+          >
+            Save Profile
+          </button>
+
+
+          <button
+            id="logoutButton"
+            type="button"
+            class="danger-button"
+          >
+            Log Out
+          </button>
+
+        </section>
+
+
+        <!-- STATS -->
+
+        <section class="card stats-card">
+
+          <span class="eyebrow">
+            YOUR ACTIVITY
           </span>
 
-          <strong id="promptCount">
-            0
-          </strong>
-
-        </div>
+          <h2>
+            Your Workspace
+          </h2>
 
 
-        <div class="stat-card">
+          <div class="stats-grid">
 
-          <span>
-            Workspace
-          </span>
+            <div class="stat">
 
-          <strong>
-            Private
-          </strong>
+              <strong id="promptCount">
+                0
+              </strong>
 
-        </div>
+              <span>
+                Saved Prompts
+              </span>
+
+            </div>
 
 
-        <div class="stat-card">
+            <div class="stat">
 
-          <span>
-            Status
-          </span>
+              <strong>
+                Private
+              </strong>
 
-          <strong>
-            Active
-          </strong>
+              <span>
+                Profile
+              </span>
 
-        </div>
+            </div>
+
+
+            <div class="stat">
+
+              <strong>
+                Secure
+              </strong>
+
+              <span>
+                Account
+              </span>
+
+            </div>
+
+          </div>
+
+        </section>
 
       </div>
 
@@ -843,19 +855,29 @@
   </main>
 
 
-  <!-- TOAST -->
+  <!-- =====================================================
+       TOAST
+  ====================================================== -->
+
   <div
     id="toast"
     class="toast"
-  >
-    <span id="toastMessage"></span>
-  </div>
+    role="status"
+    aria-live="polite"
+  ></div>
 
 
-  <!-- SUPABASE -->
+  <!-- =====================================================
+       SUPABASE
+  ====================================================== -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- APP -->
+
+  <!-- =====================================================
+       APP
+  ====================================================== -->
+
   <script src="app.js"></script>
 
 </body>
