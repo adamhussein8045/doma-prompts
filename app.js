@@ -1300,17 +1300,21 @@ async function handleAuthSubmit(event) {
       }
 
 
-      currentSession = data.session;
-      currentUser = data.user;
+currentSession = data.session;
+currentUser = data.user;
 
+closeAuthModal();
+showPage("home");
 
-      await loadProfile();
-      await loadPrompts();
+showToast("Account created successfully");
 
-      closeAuthModal();
+loadProfile().catch((error) => {
+  console.error("Background profile load error:", error);
+});
 
-      showToast("Account created successfully");
-
+loadPrompts().catch((error) => {
+  console.error("Background prompts load error:", error);
+});
     } else {
 
       const { data, error } =
