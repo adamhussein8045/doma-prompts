@@ -1,1 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
 
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <meta
+    name="description"
+    content="Doma Prompts — Turn ideas into powerful prompts."
+  />
+
+  <meta name="theme-color" content="#08090d" />
+
+  <title>Doma Prompts — Turn Ideas Into Powerful Prompts</title>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- BACKGROUND -->
+  <div class="background">
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+    <div class="grid"></div>
+  </div>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="nav-inner">
+
+      <a href="#" class="logo" data-page="home">
+        <span class="logo-mark">D</span>
+        <span>Doma Prompts</span>
+      </a>
+
+      <nav class="nav-links">
+        <button class="nav-link active" data-page="home">
+          Generate
+        </button>
+
+        <button class="nav-link" data-page="prompts">
+          My Prompts
+        </button>
+
+        <button class="nav-link" data-page="profile">
+          Profile
+        </button>
+      </nav>
+
+      <button class="nav-cta" data-page="home">
+        Create Prompt
+      </button>
+
+    </div>
+  </header>
+
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- HOME -->
+    <section class="page active-page" id="homePage">
+
+      <!-- HERO -->
+      <div class="hero">
+
+        <div class="badge">
+          <span class="badge-dot"></span>
+          AI Prompt Workspace
+        </div>
+
+        <h1>
+          Your idea.
+          <span>A better prompt.</span>
+        </h1>
+
+        <p>
+          Turn simple ideas into structured, detailed and powerful
+          prompts designed to get better results from AI.
+        </p>
+
+      </div>
+
+
+      <!-- GENERATOR -->
+      <div class="generator-layout">
+
+        <!-- LEFT -->
+        <div class="generator-card">
+
+          <div class="card-header">
+            <div>
+              <span class="eyebrow">PROMPT GENERATOR</span>
+              <h2>Describe your idea</h2>
+            </div>
+
+            <span class="step">01</span>
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="idea">
+              What do you want to create?
+            </label>
+
+            <textarea
+              id="idea"
+              placeholder="Example: I want to create a modern website for a coding platform where users can learn HTML, CSS and JavaScript..."
+            ></textarea>
+
+            <div class="textarea-footer">
+              <span id="characterCount">0 characters</span>
+              <button id="clearIdea" class="text-button">
+                Clear
+              </button>
+            </div>
+
+          </div>
+
+
+          <div class="form-grid">
+
+            <div class="form-group">
+
+              <label for="projectType">
+                Project type
+              </label>
+
+              <select id="projectType">
+                <option value="Website">Website</option>
+                <option value="Web App">Web App</option>
+                <option value="Mobile App">Mobile App</option>
+                <option value="SaaS">SaaS</option>
+                <option value="AI Tool">AI Tool</option>
+                <option value="Game">Game</option>
+                <option value="API">API</option>
+                <option value="Automation">Automation</option>
+                <option value="Other">Other</option>
+              </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="style">
+                Design / Style
+              </label>
+
+              <select id="style">
+                <option value="Modern">Modern</option>
+                <option value="Minimal">Minimal</option>
+                <option value="Futuristic">Futuristic</option>
+                <option value="Professional">Professional</option>
+                <option value="Creative">Creative</option>
+                <option value="Dark">Dark</option>
+              </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="technology">
+                Technology
+              </label>
+
+              <select id="technology">
+                <option value="HTML, CSS and JavaScript">
+                  HTML, CSS and JavaScript
+                </option>
+
+                <option value="React">
+                  React
+                </option>
+
+                <option value="Next.js">
+                  Next.js
+                </option>
+
+                <option value="Vue">
+                  Vue
+                </option>
+
+                <option value="Node.js">
+                  Node.js
+                </option>
+
+                <option value="Python">
+                  Python
+                </option>
+
+                <option value="Other">
+                  Other
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="detail">
+                Detail level
+              </label>
+
+              <select id="detail">
+
+                <option value="Quick">
+                  Quick
+                </option>
+
+                <option value="Standard" selected>
+                  Standard
+                </option>
+
+                <option value="Professional">
+                  Professional
+                </option>
+
+                <option value="Maximum Detail">
+                  Maximum Detail
+                </option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+
+          <button class="generate-button" id="generateButton">
+
+            <span>Generate Powerful Prompt</span>
+
+            <span class="button-arrow">
+              →
+            </span>
+
+          </button>
+
+        </div>
+
+
+        <!-- RIGHT -->
+        <div class="preview-card">
+
+          <div class="card-header">
+
+            <div>
+              <span class="eyebrow">OUTPUT</span>
+              <h2>Generated prompt</h2>
+            </div>
+
+            <span class="status" id="outputStatus">
+              Ready
+            </span>
+
+          </div>
+
+
+          <div class="output-wrapper">
+
+            <div id="emptyOutput" class="empty-output">
+
+              <div class="empty-icon">
+                ✦
+              </div>
+
+              <h3>
+                Your prompt will appear here
+              </h3>
+
+              <p>
+                Describe your idea and choose your preferred
+                level of detail.
+              </p>
+
+            </div>
+
+
+            <div
+              id="generatedOutput"
+              class="generated-output hidden"
+            >
+
+              <div class="output-title-row">
+
+                <input
+                  id="promptTitle"
+                  class="prompt-title"
+                  value="Untitled Prompt"
+                />
+
+                <button
+                  id="editTitle"
+                  class="icon-button"
+                  title="Edit title"
+                >
+                  ✎
+                </button>
+
+              </div>
+
+              <pre id="promptText"></pre>
+
+            </div>
+
+          </div>
+
+
+          <div class="output-actions">
+
+            <button id="copyButton" class="secondary-button">
+              Copy
+            </button>
+
+            <button id="improveButton" class="secondary-button">
+              Improve
+            </button>
+
+            <button id="regenerateButton" class="secondary-button">
+              Regenerate
+            </button>
+
+            <button id="saveButton" class="primary-small">
+              Save Prompt
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- MY PROMPTS -->
+    <section class="page" id="promptsPage">
+
+      <div class="section-heading">
+
+        <div>
+          <span class="eyebrow">PRIVATE WORKSPACE</span>
+
+          <h2>
+            My Prompts
+          </h2>
+
+          <p>
+            Your saved prompts are stored privately on this device.
+          </p>
+        </div>
+
+        <button class="nav-cta" data-page="home">
+          + New Prompt
+        </button>
+
+      </div>
+
+
+      <div id="promptsContainer" class="prompts-container">
+
+        <div class="no-prompts">
+
+          <div class="empty-icon">
+            ◇
+          </div>
+
+          <h3>
+            No saved prompts yet
+          </h3>
+
+          <p>
+            Generate your first prompt and save it here.
+          </p>
+
+          <button class="primary-small" data-page="home">
+            Create First Prompt
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- PROFILE -->
+    <section class="page" id="profilePage">
+
+      <div class="section-heading">
+
+        <div>
+          <span class="eyebrow">PRIVATE ACCOUNT</span>
+
+          <h2>
+            Your Profile
+          </h2>
+
+          <p>
+            Your profile is private and visible only on this device.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="profile-card">
+
+        <div class="profile-avatar" id="profileAvatar">
+          D
+        </div>
+
+        <div class="profile-info">
+
+          <label>
+            Display name
+          </label>
+
+          <input
+            type="text"
+            id="profileName"
+            placeholder="Your name"
+          />
+
+          <label>
+            Bio
+          </label>
+
+          <textarea
+            id="profileBio"
+            placeholder="Tell something about yourself..."
+          ></textarea>
+
+          <button id="saveProfile" class="primary-small">
+            Save Profile
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="stats-grid">
+
+        <div class="stat-card">
+          <span>Saved prompts</span>
+          <strong id="promptCount">0</strong>
+        </div>
+
+        <div class="stat-card">
+          <span>Workspace</span>
+          <strong>Private</strong>
+        </div>
+
+        <div class="stat-card">
+          <span>Status</span>
+          <strong>Active</strong>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- TOAST -->
+  <div id="toast" class="toast">
+    <span id="toastMessage"></span>
+  </div>
+
+
+  <script src="app.js"></script>
+
+</body>
+</html>
