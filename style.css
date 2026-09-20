@@ -1320,19 +1320,17 @@ select {
   font-size: 10px;
 }
 
-
 /* =========================================================
    AUTH MODAL
 ========================================================= */
 
 .auth-modal {
   position: fixed;
-
   inset: 0;
 
   z-index: 1000;
 
-  display: flex;
+  display: none;
 
   align-items: center;
   justify-content: center;
@@ -1346,15 +1344,12 @@ select {
   -webkit-backdrop-filter: blur(18px);
 }
 
-.auth-modal.hidden {
-  display: none;
+.auth-modal.active {
+  display: flex;
 }
 
 .auth-card {
-  width: min(
-    450px,
-    100%
-  );
+  width: min(450px, 100%);
 
   padding: 30px;
 
@@ -1372,19 +1367,14 @@ select {
   border-radius: 25px;
 
   box-shadow:
-    0 40px 120px
-    rgba(0, 0, 0, 0.58),
-    0 0 80px
-    rgba(109, 140, 255, 0.07);
+    0 40px 120px rgba(0, 0, 0, 0.58),
+    0 0 80px rgba(109, 140, 255, 0.07);
 }
 
 .auth-brand {
   display: flex;
-
   align-items: center;
-
   gap: 12px;
-
   margin-bottom: 25px;
 }
 
@@ -1395,7 +1385,6 @@ select {
   flex: 0 0 auto;
 
   display: grid;
-
   place-items: center;
 
   border-radius: 13px;
@@ -1410,12 +1399,7 @@ select {
     );
 
   font-size: 17px;
-
   font-weight: 900;
-
-  box-shadow:
-    0 10px 28px
-    rgba(109, 140, 255, 0.2);
 }
 
 .auth-brand strong {
@@ -1431,7 +1415,7 @@ select {
 
   margin-top: 2px;
 
-  color: var(--text-3);
+  color: #737c8c;
 
   font-size: 10px;
 }
@@ -1451,7 +1435,7 @@ select {
 .auth-heading p {
   margin-top: 7px;
 
-  color: var(--text-3);
+  color: #737c8c;
 
   font-size: 11px;
 
@@ -1461,8 +1445,7 @@ select {
 .auth-tabs {
   display: grid;
 
-  grid-template-columns:
-    1fr 1fr;
+  grid-template-columns: 1fr 1fr;
 
   gap: 4px;
 
@@ -1474,7 +1457,7 @@ select {
     rgba(255, 255, 255, 0.035);
 
   border:
-    1px solid var(--border);
+    1px solid rgba(255, 255, 255, 0.085);
 
   border-radius: 11px;
 }
@@ -1482,19 +1465,18 @@ select {
 .auth-tabs button {
   height: 38px;
 
-  color: var(--text-3);
+  color: #737c8c;
 
   background: transparent;
 
   border-radius: 8px;
 
   font-size: 11px;
-
   font-weight: 700;
 
   transition:
-    color var(--transition),
-    background var(--transition);
+    color 180ms ease,
+    background 180ms ease;
 }
 
 .auth-tabs button:hover {
@@ -1520,13 +1502,11 @@ select {
   color: #cbd2df;
 
   font-size: 10px;
-
   font-weight: 700;
 }
 
 .auth-field input {
   width: 100%;
-
   height: 45px;
 
   padding: 0 12px;
@@ -1537,15 +1517,15 @@ select {
     rgba(3, 5, 9, 0.35);
 
   border:
-    1px solid var(--border);
+    1px solid rgba(255, 255, 255, 0.085);
 
   border-radius: 10px;
 
   font-size: 12px;
 
   transition:
-    border-color var(--transition),
-    box-shadow var(--transition);
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .auth-field input::placeholder {
@@ -1568,7 +1548,7 @@ select {
 
   text-align: center;
 
-  color: var(--text-3);
+  color: #737c8c;
 
   font-size: 10px;
 }
@@ -1578,12 +1558,11 @@ select {
 }
 
 .auth-message.success {
-  color: var(--success);
+  color: #54d99d;
 }
 
 .auth-submit {
   width: 100%;
-
   height: 47px;
 
   color: white;
@@ -1602,14 +1581,13 @@ select {
     rgba(109, 140, 255, 0.18);
 
   font-size: 12px;
-
   font-weight: 700;
 
   cursor: pointer;
 
   transition:
-    transform var(--transition),
-    box-shadow var(--transition);
+    transform 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .auth-submit:hover {
@@ -1618,6 +1596,12 @@ select {
   box-shadow:
     0 14px 35px
     rgba(109, 140, 255, 0.28);
+}
+
+.auth-submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
 }
 
 .auth-footer {
@@ -1629,7 +1613,6 @@ select {
 
   font-size: 9px;
 }
-
 
 /* =========================================================
    TOAST
