@@ -2367,3 +2367,44 @@ async function initApp() {
 ========================================================= */
 
 initApp();
+/* =========================================
+   DOMA PROMPTS — PREMIUM CURSOR JS
+   ========================================= */
+
+(() => {
+  const root = document.documentElement;
+  const body = document.body;
+
+  let mouseX = -100;
+  let mouseY = -100;
+
+  window.addEventListener("mousemove", (event) => {
+    mouseX = event.clientX;
+    mouseY = event.clientY;
+
+    root.style.setProperty("--mouse-x", `${mouseX}px`);
+    root.style.setProperty("--mouse-y", `${mouseY}px`);
+  });
+
+  const interactiveElements = document.querySelectorAll(
+    "a, button, input, textarea, select, [role='button']"
+  );
+
+  interactiveElements.forEach((element) => {
+    element.addEventListener("mouseenter", () => {
+      body.classList.add("cursor-hover");
+    });
+
+    element.addEventListener("mouseleave", () => {
+      body.classList.remove("cursor-hover");
+    });
+  });
+
+  window.addEventListener("mousedown", () => {
+    body.classList.add("cursor-click");
+  });
+
+  window.addEventListener("mouseup", () => {
+    body.classList.remove("cursor-click");
+  });
+})();
