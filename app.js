@@ -1325,17 +1325,21 @@ async function handleAuthSubmit(event) {
       }
 
 
-      currentSession = data.session;
-      currentUser = data.user;
+currentSession = data.session;
+currentUser = data.user;
 
+closeAuthModal();
+showPage("home");
 
-      await loadProfile();
-      await loadPrompts();
+showToast("Signed in successfully");
 
-      closeAuthModal();
+loadProfile().catch((error) => {
+  console.error("Background profile load error:", error);
+});
 
-      showToast("Signed in successfully");
-    }
+loadPrompts().catch((error) => {
+  console.error("Background prompts load error:", error);
+});
 
 
   } catch (error) {
