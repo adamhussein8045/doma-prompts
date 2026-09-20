@@ -79,6 +79,10 @@ body {
   overflow-x: hidden;
 }
 
+body.auth-open {
+  overflow: hidden;
+}
+
 button,
 input,
 textarea,
@@ -147,6 +151,13 @@ select {
       black,
       transparent 85%
     );
+
+  -webkit-mask-image:
+    linear-gradient(
+      to bottom,
+      black,
+      transparent 85%
+    );
 }
 
 .orb {
@@ -208,8 +219,7 @@ select {
 
   margin: 16px auto 0;
 
-  border:
-    1px solid var(--border);
+  border: 1px solid var(--border);
 
   border-radius: 17px;
 
@@ -307,12 +317,16 @@ select {
 
 .nav-links button:hover {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.045);
+
+  background:
+    rgba(255, 255, 255, 0.045);
 }
 
 .nav-links button.active {
   color: #fff;
-  background: rgba(255, 255, 255, 0.065);
+
+  background:
+    rgba(255, 255, 255, 0.065);
 }
 
 .nav-cta {
@@ -453,7 +467,7 @@ select {
 
 
 /* =========================================================
-   GENERATOR LAYOUT
+   GENERATOR
 ========================================================= */
 
 .generator-layout {
@@ -503,6 +517,7 @@ select {
 
 .card-header {
   display: flex;
+
   align-items: flex-start;
   justify-content: space-between;
 
@@ -725,7 +740,6 @@ select {
 
 .field select option {
   background: #10141c;
-
   color: white;
 }
 
@@ -1025,7 +1039,7 @@ select {
 
 
 /* =========================================================
-   PROMPTS CONTAINER
+   PROMPTS
 ========================================================= */
 
 .prompts-container {
@@ -1320,12 +1334,14 @@ select {
   font-size: 10px;
 }
 
+
 /* =========================================================
    AUTH MODAL
 ========================================================= */
 
 .auth-modal {
   position: fixed;
+
   inset: 0;
 
   z-index: 1000;
@@ -1342,10 +1358,19 @@ select {
 
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+
+  /*
+    Important:
+    When the modal is hidden, it must NOT block
+    clicks on the website underneath.
+  */
+  pointer-events: none;
 }
 
 .auth-modal.active {
   display: flex;
+
+  pointer-events: auto;
 }
 
 .auth-card {
@@ -1373,8 +1398,11 @@ select {
 
 .auth-brand {
   display: flex;
+
   align-items: center;
+
   gap: 12px;
+
   margin-bottom: 25px;
 }
 
@@ -1385,6 +1413,7 @@ select {
   flex: 0 0 auto;
 
   display: grid;
+
   place-items: center;
 
   border-radius: 13px;
@@ -1399,6 +1428,7 @@ select {
     );
 
   font-size: 17px;
+
   font-weight: 900;
 }
 
@@ -1472,6 +1502,7 @@ select {
   border-radius: 8px;
 
   font-size: 11px;
+
   font-weight: 700;
 
   transition:
@@ -1502,11 +1533,13 @@ select {
   color: #cbd2df;
 
   font-size: 10px;
+
   font-weight: 700;
 }
 
 .auth-field input {
   width: 100%;
+
   height: 45px;
 
   padding: 0 12px;
@@ -1563,6 +1596,7 @@ select {
 
 .auth-submit {
   width: 100%;
+
   height: 47px;
 
   color: white;
@@ -1581,6 +1615,7 @@ select {
     rgba(109, 140, 255, 0.18);
 
   font-size: 12px;
+
   font-weight: 700;
 
   cursor: pointer;
@@ -1600,7 +1635,9 @@ select {
 
 .auth-submit:disabled {
   opacity: 0.6;
+
   cursor: wait;
+
   transform: none;
 }
 
@@ -1613,6 +1650,7 @@ select {
 
   font-size: 9px;
 }
+
 
 /* =========================================================
    TOAST
@@ -1667,6 +1705,35 @@ select {
 
   transform:
     translateY(0);
+}
+
+
+/* =========================================================
+   DISABLED STATES
+========================================================= */
+
+button:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+  transform: none !important;
+}
+
+
+/* =========================================================
+   FOCUS ACCESSIBILITY
+========================================================= */
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline:
+    2px solid
+    rgba(109, 140, 255, 0.65);
+
+  outline-offset: 2px;
 }
 
 
@@ -1875,3 +1942,23 @@ select {
 
 }
 
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+
+    transition-duration: 0.01ms !important;
+
+    animation-duration: 0.01ms !important;
+
+    animation-iteration-count: 1 !important;
+  }
+
+}
