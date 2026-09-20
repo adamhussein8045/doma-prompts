@@ -1962,3 +1962,106 @@ select:focus-visible {
   }
 
 }
+/* =========================================
+   DOMA PROMPTS — PREMIUM CURSOR
+   ========================================= */
+
+html,
+body,
+button,
+a,
+input,
+textarea,
+select {
+  cursor: none;
+}
+
+/* Main cursor */
+body::after {
+  content: "";
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow:
+    0 0 10px rgba(109, 140, 255, 0.9),
+    0 0 25px rgba(109, 140, 255, 0.65),
+    0 0 50px rgba(34, 211, 238, 0.35);
+  pointer-events: none;
+  z-index: 999999;
+  transform: translate(-50%, -50%);
+  left: var(--mouse-x, -100px);
+  top: var(--mouse-y, -100px);
+  transition:
+    width 0.2s ease,
+    height 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+/* Outer glow ring */
+body::before {
+  content: "";
+  position: fixed;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(109, 140, 255, 0.65);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999998;
+  left: var(--mouse-x, -100px);
+  top: var(--mouse-y, -100px);
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.25s ease,
+    height 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* Hover effect */
+body.cursor-hover::after {
+  width: 7px;
+  height: 7px;
+  background: #22d3ee;
+  box-shadow:
+    0 0 12px #22d3ee,
+    0 0 30px rgba(34, 211, 238, 0.8),
+    0 0 60px rgba(109, 140, 255, 0.45);
+}
+
+body.cursor-hover::before {
+  width: 48px;
+  height: 48px;
+  border-color: rgba(34, 211, 238, 0.85);
+  box-shadow:
+    0 0 25px rgba(34, 211, 238, 0.18);
+}
+
+/* Click effect */
+body.cursor-click::before {
+  width: 65px;
+  height: 65px;
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 0 35px rgba(109, 140, 255, 0.45);
+}
+
+/* Don't interfere on touch devices */
+@media (hover: none), (pointer: coarse) {
+  html,
+  body,
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    cursor: auto;
+  }
+
+  body::before,
+  body::after {
+    display: none;
+  }
+}
