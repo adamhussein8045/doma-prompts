@@ -1,115 +1,229 @@
 /* =========================================================
    DOMA PROMPTS
    Supabase-powered App
-   ========================================================= */
+   Stable V1
+========================================================= */
 
-/* =========================
+
+/* =========================================================
    SUPABASE
-========================= */
+========================================================= */
 
-const SUPABASE_URL = "https://gpxatkpwdekurxjhtguc.supabase.co";
+const SUPABASE_URL =
+  "https://gpxatkpwdekurxjhtguc.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_onQaVtWk1QkFqpzN_Dzrsw_AoQ6tEBm";
 
-const { createClient } = window.supabase;
-
-const supabaseClient = createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
+let supabaseClient = null;
 
 
-/* =========================
+/* =========================================================
    STATE
-========================= */
+========================================================= */
 
 let currentUser = null;
 let currentSession = null;
+
 let currentPrompt = "";
 let currentEditingId = null;
+
 let savedPrompts = [];
+
 let profile = {
-  name: "",
-  bio: ""
+  id: "",
+  first_name: "",
+  last_name: "",
+  bio: "",
+  avatar_url: ""
 };
-
-
-/* =========================
-   DOM
-========================= */
-
-const ideaInput = document.getElementById("idea");
-const projectType = document.getElementById("projectType");
-const styleInput = document.getElementById("style");
-const technologyInput = document.getElementById("technology");
-const detailLevel = document.getElementById("detailLevel");
-
-const generateButton = document.getElementById("generateButton");
-const clearButton = document.getElementById("clearButton");
-
-const characterCount = document.getElementById("characterCount");
-
-const output = document.getElementById("output");
-const outputTitle = document.getElementById("outputTitle");
-
-const copyButton = document.getElementById("copyButton");
-const improveButton = document.getElementById("improveButton");
-const regenerateButton = document.getElementById("regenerateButton");
-const saveButton = document.getElementById("saveButton");
-
-const promptsContainer = document.getElementById("promptsContainer");
-
-const profileName = document.getElementById("profileName");
-const profileBio = document.getElementById("profileBio");
-const saveProfileButton = document.getElementById("saveProfileButton");
-
-const promptCount = document.getElementById("promptCount");
-
-const accountEmail = document.getElementById("accountEmail");
-const logoutButton = document.getElementById("logoutButton");
-
-const toast = document.getElementById("toast");
-
-const titleEditButton = document.getElementById("titleEditButton");
-
-
-/* =========================
-   AUTH DOM
-========================= */
-
-const authModal = document.getElementById("authModal");
-
-const authSignInTab = document.getElementById("authSignInTab");
-const authSignUpTab = document.getElementById("authSignUpTab");
-
-const authForm = document.getElementById("authForm");
-
-const authEmail = document.getElementById("authEmail");
-const authPassword = document.getElementById("authPassword");
-const authDisplayName = document.getElementById("authDisplayName");
-
-const authSubmitButton = document.getElementById("authSubmitButton");
-const authMessage = document.getElementById("authMessage");
 
 let authMode = "signin";
 
 
-/* =========================
+/* =========================================================
+   DOM
+========================================================= */
+
+const ideaInput =
+  document.getElementById("idea");
+
+const projectType =
+  document.getElementById("projectType");
+
+const styleInput =
+  document.getElementById("style");
+
+const technologyInput =
+  document.getElementById("technology");
+
+const detailLevel =
+  document.getElementById("detailLevel");
+
+const generateButton =
+  document.getElementById("generateButton");
+
+const clearButton =
+  document.getElementById("clearButton");
+
+const characterCount =
+  document.getElementById("characterCount");
+
+const output =
+  document.getElementById("output");
+
+const outputTitle =
+  document.getElementById("outputTitle");
+
+const copyButton =
+  document.getElementById("copyButton");
+
+const improveButton =
+  document.getElementById("improveButton");
+
+const regenerateButton =
+  document.getElementById("regenerateButton");
+
+const saveButton =
+  document.getElementById("saveButton");
+
+const titleEditButton =
+  document.getElementById("titleEditButton");
+
+const promptsContainer =
+  document.getElementById("promptsContainer");
+
+const profileName =
+  document.getElementById("profileName");
+
+const profileBio =
+  document.getElementById("profileBio");
+
+const saveProfileButton =
+  document.getElementById("saveProfileButton");
+
+const promptCount =
+  document.getElementById("promptCount");
+
+const accountEmail =
+  document.getElementById("accountEmail");
+
+const logoutButton =
+  document.getElementById("logoutButton");
+
+const toast =
+  document.getElementById("toast");
+
+
+/* =========================================================
+   AUTH DOM
+========================================================= */
+
+const authModal =
+  document.getElementById("authModal");
+
+const authSignInTab =
+  document.getElementById("authSignInTab");
+
+const authSignUpTab =
+  document.getElementById("authSignUpTab");
+
+const authForm =
+  document.getElementById("authForm");
+
+const authDisplayName =
+  document.getElementById("authDisplayName");
+
+const authDisplayNameWrapper =
+  document.getElementById(
+    "authDisplayNameWrapper"
+  );
+
+const authEmail =
+  document.getElementById("authEmail");
+
+const authPassword =
+  document.getElementById("authPassword");
+
+const authSubmitButton =
+  document.getElementById(
+    "authSubmitButton"
+  );
+
+const authMessage =
+  document.getElementById("authMessage");
+
+
+/* =========================================================
+   SUPABASE INIT
+========================================================= */
+
+function initSupabase() {
+  if (
+    !window.supabase ||
+    typeof window.supabase.createClient !== "function"
+  ) {
+    console.error(
+      "Supabase JavaScript library was not loaded."
+    );
+
+    showFatalError(
+      "Supabase library could not be loaded. Check your internet connection or the Supabase script in index.html."
+    );
+
+    return false;
+  }
+
+  const { createClient } =
+    window.supabase;
+
+  supabaseClient = createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  return true;
+}
+
+
+/* =========================================================
+   FATAL ERROR
+========================================================= */
+
+function showFatalError(message) {
+  console.error(message);
+
+  if (authMessage) {
+    authMessage.textContent = message;
+    authMessage.className =
+      "auth-message error";
+  }
+
+  if (authSubmitButton) {
+    authSubmitButton.disabled = true;
+  }
+}
+
+
+/* =========================================================
    HELPERS
-========================= */
+========================================================= */
 
 function showToast(message) {
   if (!toast) return;
 
   toast.textContent = message;
+
   toast.classList.add("show");
 
-  clearTimeout(window.__toastTimer);
+  clearTimeout(
+    window.__domaToastTimer
+  );
 
-  window.__toastTimer = setTimeout(() => {
-    toast.classList.remove("show");
-  }, 2800);
+  window.__domaToastTimer =
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2800);
 }
 
 
@@ -124,17 +238,26 @@ function escapeHTML(value = "") {
 
 
 function getProfileName() {
-  return [profile.first_name, profile.last_name]
+  return [
+    profile.first_name,
+    profile.last_name
+  ]
     .filter(Boolean)
     .join(" ");
 }
 
 
-function setAuthMessage(message, type = "") {
+function setAuthMessage(
+  message = "",
+  type = ""
+) {
   if (!authMessage) return;
 
-  authMessage.textContent = message;
-  authMessage.className = "auth-message";
+  authMessage.textContent =
+    message;
+
+  authMessage.className =
+    "auth-message";
 
   if (type) {
     authMessage.classList.add(type);
@@ -142,42 +265,145 @@ function setAuthMessage(message, type = "") {
 }
 
 
-/* =========================
+/* =========================================================
+   AUTH MODAL
+========================================================= */
+
+function openAuthModal() {
+  if (!authModal) return;
+
+  authModal.classList.add("active");
+
+  document.body.classList.add(
+    "auth-open"
+  );
+}
+
+
+function closeAuthModal() {
+  if (!authModal) return;
+
+  authModal.classList.remove(
+    "active"
+  );
+
+  document.body.classList.remove(
+    "auth-open"
+  );
+}
+
+
+/* =========================================================
+   AUTH MODE
+========================================================= */
+
+function setAuthMode(mode) {
+  authMode = mode;
+
+  const signup =
+    mode === "signup";
+
+
+  if (authSignInTab) {
+    authSignInTab.classList.toggle(
+      "active",
+      !signup
+    );
+  }
+
+
+  if (authSignUpTab) {
+    authSignUpTab.classList.toggle(
+      "active",
+      signup
+    );
+  }
+
+
+  /*
+    Hide the entire wrapper instead
+    of hiding only the input.
+  */
+
+  if (authDisplayNameWrapper) {
+    authDisplayNameWrapper.style.display =
+      signup ? "" : "none";
+  } else if (authDisplayName) {
+    authDisplayName.style.display =
+      signup ? "" : "none";
+  }
+
+
+  if (authSubmitButton) {
+    authSubmitButton.textContent =
+      signup
+        ? "Create Account"
+        : "Sign In";
+  }
+
+
+  setAuthMessage("");
+}
+
+
+/* =========================================================
    NAVIGATION
-========================= */
+========================================================= */
 
 function showPage(page) {
-  if (!currentUser) return;
+  if (!currentUser) {
+    openAuthModal();
+    return;
+  }
 
-  const pages = document.querySelectorAll("[data-page]");
+
+  const pages =
+    document.querySelectorAll(
+      "[data-page]"
+    );
+
 
   pages.forEach((element) => {
-    element.classList.remove("active");
+    element.classList.remove(
+      "active"
+    );
   });
 
-  const target = document.querySelector(`[data-page="${page}"]`);
+
+  const target =
+    document.querySelector(
+      `[data-page="${page}"]`
+    );
+
 
   if (target) {
     target.classList.add("active");
   }
 
-  const navButtons = document.querySelectorAll("[data-nav]");
+
+  const navButtons =
+    document.querySelectorAll(
+      "[data-nav]"
+    );
+
 
   navButtons.forEach((button) => {
-    button.classList.remove("active");
-
-    if (button.dataset.nav === page) {
-      button.classList.add("active");
-    }
+    button.classList.toggle(
+      "active",
+      button.dataset.nav === page
+    );
   });
+
 
   if (page === "prompts") {
     renderPrompts();
   }
 
+
   if (page === "profile") {
     loadProfileIntoUI();
   }
+
 
   window.scrollTo({
     top: 0,
@@ -186,64 +412,120 @@ function showPage(page) {
 }
 
 
-document.querySelectorAll("[data-nav]").forEach((button) => {
-  button.addEventListener("click", () => {
-    showPage(button.dataset.nav);
+/* =========================================================
+   NAV EVENTS
+========================================================= */
+
+document
+  .querySelectorAll("[data-nav]")
+  .forEach((button) => {
+
+    button.addEventListener(
+      "click",
+      () => {
+        showPage(
+          button.dataset.nav
+        );
+      }
+    );
+
   });
-});
 
 
-document.querySelectorAll("[data-page-link]").forEach((button) => {
-  button.addEventListener("click", () => {
-    showPage(button.dataset.pageLink);
+document
+  .querySelectorAll("[data-page-link]")
+  .forEach((button) => {
+
+    button.addEventListener(
+      "click",
+      () => {
+        showPage(
+          button.dataset.pageLink
+        );
+      }
+    );
+
   });
-});
 
 
-/* =========================
+/* =========================================================
    CHARACTER COUNT
-========================= */
+========================================================= */
 
 function updateCharacterCount() {
-  if (!ideaInput || !characterCount) return;
+  if (!ideaInput) return;
 
-  characterCount.textContent = ideaInput.value.length;
+  if (characterCount) {
+    characterCount.textContent =
+      ideaInput.value.length;
+  }
 }
+
 
 if (ideaInput) {
-  ideaInput.addEventListener("input", updateCharacterCount);
+  ideaInput.addEventListener(
+    "input",
+    updateCharacterCount
+  );
 }
 
 
-/* =========================
+/* =========================================================
    CLEAR
-========================= */
+========================================================= */
 
 if (clearButton) {
-  clearButton.addEventListener("click", () => {
-    if (ideaInput) ideaInput.value = "";
 
-    updateCharacterCount();
+  clearButton.addEventListener(
+    "click",
+    () => {
 
-    if (output) {
-      output.textContent = "Your generated prompt will appear here.";
+      if (ideaInput) {
+        ideaInput.value = "";
+      }
+
+      if (projectType) {
+        projectType.value = "";
+      }
+
+      if (styleInput) {
+        styleInput.value = "";
+      }
+
+      if (technologyInput) {
+        technologyInput.value = "";
+      }
+
+      if (detailLevel) {
+        detailLevel.value =
+          "standard";
+      }
+
+      if (output) {
+        output.textContent =
+          "Your generated prompt will appear here.";
+      }
+
+      if (outputTitle) {
+        outputTitle.value =
+          "Untitled Prompt";
+      }
+
+      currentPrompt = "";
+      currentEditingId = null;
+
+      updateCharacterCount();
+
+      showToast("Cleared");
     }
+  );
 
-    currentPrompt = "";
-    currentEditingId = null;
-
-    if (outputTitle) {
-      outputTitle.value = "Untitled Prompt";
-    }
-
-    showToast("Cleared");
-  });
 }
 
 
-/* =========================
+/* =========================================================
    PROMPT GENERATOR
-========================= */
+========================================================= */
 
 function buildPrompt({
   idea,
@@ -252,7 +534,10 @@ function buildPrompt({
   technology,
   detail
 }) {
-  const level = detail || "standard";
+
+  const level =
+    detail || "standard";
+
 
   let prompt = `
 You are an expert AI assistant specializing in creating high-quality digital products, websites, applications, and software solutions.
@@ -294,8 +579,9 @@ The result should be practical, coherent, modern, responsive, accessible, and ea
 
 
   if (level === "quick") {
-    prompt += `
 
+    prompt += `
+    
 ━━━━━━━━━━━━━━━━━━━━
 QUICK REQUIREMENTS
 ━━━━━━━━━━━━━━━━━━━━
@@ -305,12 +591,14 @@ QUICK REQUIREMENTS
 - Prioritize the most important functionality.
 - Avoid unnecessary features.
 `;
+
   }
 
 
   if (level === "standard") {
-    prompt += `
 
+    prompt += `
+    
 ━━━━━━━━━━━━━━━━━━━━
 REQUIREMENTS
 ━━━━━━━━━━━━━━━━━━━━
@@ -320,14 +608,16 @@ REQUIREMENTS
 - Create a clear structure.
 - Make the interface responsive.
 - Keep the design visually consistent.
-- Include useful states such as loading, empty, success, and error states.
+- Include loading, empty, success, and error states.
 `;
+
   }
 
 
   if (level === "professional") {
-    prompt += `
 
+    prompt += `
+    
 ━━━━━━━━━━━━━━━━━━━━
 PROFESSIONAL SPECIFICATION
 ━━━━━━━━━━━━━━━━━━━━
@@ -362,24 +652,30 @@ Avoid unnecessary operations and keep the experience fast.
 10. EDGE CASES
 Consider unusual inputs, missing data, errors, and unexpected user behavior.
 `;
+
   }
 
 
   if (level === "maximum") {
-    prompt += `
 
+    prompt += `
+    
 ━━━━━━━━━━━━━━━━━━━━
 MAXIMUM DETAIL SPECIFICATION
 ━━━━━━━━━━━━━━━━━━━━
 
 ROLE
+
 Act as a senior product designer, UX engineer, software architect, and frontend engineer.
 
 PRODUCT VISION
+
 Translate the original idea into a complete digital product with a clear purpose and strong user experience.
 
 USER EXPERIENCE
+
 Describe:
+
 - Target users
 - Main user journey
 - Navigation
@@ -392,7 +688,9 @@ Describe:
 - Success states
 
 INFORMATION ARCHITECTURE
+
 Define:
+
 - Pages
 - Sections
 - Components
@@ -400,7 +698,9 @@ Define:
 - Content hierarchy
 
 UI SYSTEM
+
 Specify:
+
 - Typography
 - Spacing
 - Borders
@@ -414,13 +714,17 @@ Specify:
 - Visual hierarchy
 
 FUNCTIONAL REQUIREMENTS
+
 Explain every important feature and how it should behave.
 
 TECHNICAL REQUIREMENTS
+
 Use appropriate architecture and clean separation of concerns.
 
 DATA
+
 If data is required, explain:
+
 - Data structure
 - Relationships
 - Validation
@@ -430,7 +734,9 @@ If data is required, explain:
 - Error handling
 
 SECURITY
+
 Consider:
+
 - Authentication
 - Authorization
 - Input validation
@@ -438,7 +744,9 @@ Consider:
 - Protection of private user data
 
 ACCESSIBILITY
-The product should be usable with:
+
+The product should support:
+
 - Keyboard navigation
 - Screen readers
 - Clear labels
@@ -446,7 +754,9 @@ The product should be usable with:
 - Sufficient contrast
 
 PERFORMANCE
+
 Optimize:
+
 - Loading
 - Rendering
 - Network requests
@@ -454,16 +764,19 @@ Optimize:
 - JavaScript execution
 
 EDGE CASES
+
 Think through unexpected situations before implementation.
 
 QUALITY STANDARD
+
 The final result should feel like a polished modern production product rather than a basic prototype.
 `;
+
   }
 
 
   prompt += `
-
+  
 ━━━━━━━━━━━━━━━━━━━━
 FINAL INSTRUCTION
 ━━━━━━━━━━━━━━━━━━━━
@@ -475,6 +788,7 @@ Do not ignore important requirements from the original idea.
 When something is not explicitly specified, make a sensible professional decision instead of adding unnecessary complexity.
 
 Prioritize:
+
 1. Functionality
 2. User experience
 3. Visual quality
@@ -489,16 +803,26 @@ Prioritize:
 }
 
 
-function createTitle(idea) {
-  if (!idea) return "Untitled Prompt";
+/* =========================================================
+   TITLE
+========================================================= */
 
-  const cleaned = idea
-    .replace(/\s+/g, " ")
-    .trim();
+function createTitle(idea) {
+
+  if (!idea) {
+    return "Untitled Prompt";
+  }
+
+  const cleaned =
+    idea
+      .replace(/\s+/g, " ")
+      .trim();
+
 
   if (!cleaned) {
     return "Untitled Prompt";
   }
+
 
   return cleaned.length > 55
     ? cleaned.slice(0, 55) + "..."
@@ -506,104 +830,179 @@ function createTitle(idea) {
 }
 
 
-/* =========================
+/* =========================================================
    GENERATE
-========================= */
+========================================================= */
 
 async function generatePrompt() {
+
   if (!ideaInput) return;
 
-  const idea = ideaInput.value.trim();
+
+  const idea =
+    ideaInput.value.trim();
+
 
   if (!idea) {
-    showToast("Write your idea first");
+
+    showToast(
+      "Write your idea first"
+    );
+
     ideaInput.focus();
+
     return;
   }
 
+
   if (generateButton) {
     generateButton.disabled = true;
-    generateButton.classList.add("loading");
+    generateButton.classList.add(
+      "loading"
+    );
   }
+
 
   if (output) {
-    output.textContent = "Generating...";
+    output.textContent =
+      "Generating...";
   }
 
-  await new Promise((resolve) => setTimeout(resolve, 350));
 
-  currentPrompt = buildPrompt({
-    idea,
-    project: projectType?.value,
-    style: styleInput?.value,
-    technology: technologyInput?.value,
-    detail: detailLevel?.value
-  });
+  await new Promise(
+    (resolve) =>
+      setTimeout(resolve, 350)
+  );
+
+
+  currentPrompt =
+    buildPrompt({
+      idea,
+      project:
+        projectType?.value,
+      style:
+        styleInput?.value,
+      technology:
+        technologyInput?.value,
+      detail:
+        detailLevel?.value
+    });
+
 
   currentEditingId = null;
 
+
   if (output) {
-    output.textContent = currentPrompt;
+    output.textContent =
+      currentPrompt;
   }
 
+
   if (outputTitle) {
-    outputTitle.value = createTitle(idea);
+    outputTitle.value =
+      createTitle(idea);
   }
+
 
   if (generateButton) {
     generateButton.disabled = false;
-    generateButton.classList.remove("loading");
+
+    generateButton.classList.remove(
+      "loading"
+    );
   }
 
-  showToast("Prompt generated");
+
+  showToast(
+    "Prompt generated"
+  );
 }
 
 
 if (generateButton) {
-  generateButton.addEventListener("click", generatePrompt);
+
+  generateButton.addEventListener(
+    "click",
+    generatePrompt
+  );
+
 }
 
 
-/* =========================
+/* =========================================================
    COPY
-========================= */
+========================================================= */
 
 async function copyPrompt() {
+
   if (!currentPrompt) {
-    showToast("Generate a prompt first");
+
+    showToast(
+      "Generate a prompt first"
+    );
+
     return;
   }
 
+
   try {
-    await navigator.clipboard.writeText(currentPrompt);
-    showToast("Prompt copied");
+
+    await navigator.clipboard.writeText(
+      currentPrompt
+    );
+
+    showToast(
+      "Prompt copied"
+    );
+
   } catch (error) {
+
     console.error(error);
-    showToast("Copy failed");
+
+    showToast(
+      "Copy failed"
+    );
+
   }
 }
 
 
 if (copyButton) {
-  copyButton.addEventListener("click", copyPrompt);
+
+  copyButton.addEventListener(
+    "click",
+    copyPrompt
+  );
+
 }
 
 
-/* =========================
+/* =========================================================
    IMPROVE
-========================= */
+========================================================= */
 
 async function improvePrompt() {
+
   if (!currentPrompt) {
-    showToast("Generate a prompt first");
+
+    showToast(
+      "Generate a prompt first"
+    );
+
     return;
   }
+
 
   if (improveButton) {
     improveButton.disabled = true;
   }
 
-  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  await new Promise(
+    (resolve) =>
+      setTimeout(resolve, 300)
+  );
+
 
   currentPrompt += `
 
@@ -614,6 +1013,7 @@ FINAL QUALITY PASS
 Before implementation, review the entire specification and improve it where necessary.
 
 Make sure the final result is:
+
 - Clear
 - Specific
 - Consistent
@@ -626,377 +1026,678 @@ Make sure the final result is:
 Do not introduce unnecessary complexity.
 `;
 
+
   if (output) {
-    output.textContent = currentPrompt;
+    output.textContent =
+      currentPrompt;
   }
+
 
   if (improveButton) {
     improveButton.disabled = false;
   }
 
-  showToast("Prompt improved");
+
+  showToast(
+    "Prompt improved"
+  );
 }
 
 
 if (improveButton) {
-  improveButton.addEventListener("click", improvePrompt);
+
+  improveButton.addEventListener(
+    "click",
+    improvePrompt
+  );
+
 }
 
 
-/* =========================
+/* =========================================================
    REGENERATE
-========================= */
+========================================================= */
 
 if (regenerateButton) {
-  regenerateButton.addEventListener("click", generatePrompt);
+
+  regenerateButton.addEventListener(
+    "click",
+    generatePrompt
+  );
+
 }
 
 
-/* =========================
-   SUPABASE - LOAD PROMPTS
-========================= */
+/* =========================================================
+   LOAD PROMPTS
+========================================================= */
 
 async function loadPrompts() {
+
   if (!currentUser) return;
 
-  const { data, error } = await supabaseClient
+  if (!supabaseClient) return;
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient
     .from("prompts")
     .select("*")
-    .eq("user_id", currentUser.id)
-    .order("updated_at", {
-      ascending: false
-    });
+    .eq(
+      "user_id",
+      currentUser.id
+    )
+    .order(
+      "updated_at",
+      {
+        ascending: false
+      }
+    );
+
 
   if (error) {
-    console.error("Load prompts error:", error);
-    showToast("Could not load prompts");
+
+    console.error(
+      "Load prompts error:",
+      error
+    );
+
     return;
   }
 
-  savedPrompts = data || [];
+
+  savedPrompts =
+    data || [];
 
   updatePromptCount();
+
   renderPrompts();
 }
 
 
-/* =========================
+/* =========================================================
    SAVE PROMPT
-========================= */
+========================================================= */
 
 async function savePrompt() {
+
   if (!currentUser) {
-    showToast("Please sign in first");
+
+    showToast(
+      "Please sign in first"
+    );
+
+    openAuthModal();
+
     return;
   }
+
 
   if (!currentPrompt.trim()) {
-    showToast("Generate a prompt first");
+
+    showToast(
+      "Generate a prompt first"
+    );
+
     return;
   }
 
+
   const title =
-    outputTitle?.value.trim() || "Untitled Prompt";
+    outputTitle?.value.trim() ||
+    "Untitled Prompt";
+
 
   const promptData = {
-    user_id: currentUser.id,
+
+    user_id:
+      currentUser.id,
+
     title,
-    content: currentPrompt,
-    project_type: projectType?.value || "",
-    style: styleInput?.value || "",
-    technology: technologyInput?.value || "",
-    detail_level: detailLevel?.value || "standard",
-    updated_at: new Date().toISOString()
+
+    content:
+      currentPrompt,
+
+    project_type:
+      projectType?.value || "",
+
+    style:
+      styleInput?.value || "",
+
+    technology:
+      technologyInput?.value || "",
+
+    detail_level:
+      detailLevel?.value ||
+      "standard",
+
+    updated_at:
+      new Date().toISOString()
+
   };
 
 
   let result;
 
+
   if (currentEditingId) {
-    result = await supabaseClient
-      .from("prompts")
-      .update(promptData)
-      .eq("id", currentEditingId)
-      .eq("user_id", currentUser.id)
-      .select()
-      .single();
+
+    result =
+      await supabaseClient
+        .from("prompts")
+        .update(
+          promptData
+        )
+        .eq(
+          "id",
+          currentEditingId
+        )
+        .eq(
+          "user_id",
+          currentUser.id
+        )
+        .select()
+        .single();
+
   } else {
-    result = await supabaseClient
-      .from("prompts")
-      .insert(promptData)
-      .select()
-      .single();
+
+    result =
+      await supabaseClient
+        .from("prompts")
+        .insert(
+          promptData
+        )
+        .select()
+        .single();
+
   }
 
 
   if (result.error) {
-    console.error("Save prompt error:", result.error);
-    showToast("Could not save prompt");
+
+    console.error(
+      "Save prompt error:",
+      result.error
+    );
+
+    showToast(
+      "Could not save prompt"
+    );
+
     return;
   }
 
 
-  const saved = result.data;
+  currentEditingId =
+    result.data.id;
 
-  currentEditingId = saved.id;
 
   await loadPrompts();
 
+
   showToast(
-    currentEditingId
-      ? "Prompt saved successfully"
-      : "Prompt saved"
+    "Prompt saved successfully"
   );
 }
 
 
 if (saveButton) {
-  saveButton.addEventListener("click", savePrompt);
+
+  saveButton.addEventListener(
+    "click",
+    savePrompt
+  );
+
 }
 
 
-/* =========================
+/* =========================================================
    RENDER PROMPTS
-========================= */
+========================================================= */
 
 function renderPrompts() {
-  if (!promptsContainer) return;
 
-  if (!currentUser) {
-    promptsContainer.innerHTML = "";
+  if (!promptsContainer) {
     return;
   }
 
+
+  if (!currentUser) {
+
+    promptsContainer.innerHTML = "";
+
+    return;
+  }
+
+
   if (!savedPrompts.length) {
+
     promptsContainer.innerHTML = `
+
       <div class="empty-state">
-        <h3>No saved prompts yet</h3>
-        <p>Create your first prompt and save it here.</p>
+
+        <h3>
+          No saved prompts yet
+        </h3>
+
+        <p>
+          Create your first prompt and save it here.
+        </p>
+
       </div>
+
     `;
 
     return;
   }
 
 
-  promptsContainer.innerHTML = savedPrompts
-    .map((prompt) => {
-      const date = prompt.updated_at
-        ? new Date(prompt.updated_at).toLocaleDateString()
-        : "";
+  promptsContainer.innerHTML =
+    savedPrompts
+      .map((prompt) => {
 
-      return `
-        <article class="prompt-card">
-          <div class="prompt-card-content">
-            <h3>${escapeHTML(prompt.title)}</h3>
+        const date =
+          prompt.updated_at
+            ? new Date(
+                prompt.updated_at
+              ).toLocaleDateString()
+            : "";
+
+
+        return `
+
+          <article
+            class="prompt-card"
+          >
+
+            <h3>
+              ${escapeHTML(
+                prompt.title
+              )}
+            </h3>
 
             <p>
               ${escapeHTML(
-                prompt.content.slice(0, 180)
-              )}${prompt.content.length > 180 ? "..." : ""}
+                prompt.content.slice(
+                  0,
+                  180
+                )
+              )}
+
+              ${
+                prompt.content.length >
+                180
+                  ? "..."
+                  : ""
+              }
             </p>
 
-            <span class="prompt-date">
-              ${escapeHTML(date)}
-            </span>
-          </div>
+            <div class="prompt-meta">
 
-          <div class="prompt-card-actions">
+              <span>
+                ${escapeHTML(date)}
+              </span>
 
-            <button
-              type="button"
-              data-action="open"
-              data-id="${prompt.id}"
-            >
-              Open
-            </button>
+              ${
+                prompt.detail_level
+                  ? `
+                    <span>
+                      ${escapeHTML(
+                        prompt.detail_level
+                      )}
+                    </span>
+                  `
+                  : ""
+              }
 
-            <button
-              type="button"
-              data-action="copy"
-              data-id="${prompt.id}"
-            >
-              Copy
-            </button>
+            </div>
 
-            <button
-              type="button"
-              data-action="delete"
-              data-id="${prompt.id}"
-            >
-              Delete
-            </button>
+            <div class="prompt-actions">
 
-          </div>
-        </article>
-      `;
-    })
-    .join("");
+              <button
+                type="button"
+                class="secondary-button"
+                data-action="open"
+                data-id="${prompt.id}"
+              >
+                Open
+              </button>
+
+              <button
+                type="button"
+                class="secondary-button"
+                data-action="copy"
+                data-id="${prompt.id}"
+              >
+                Copy
+              </button>
+
+              <button
+                type="button"
+                class="danger-button"
+                data-action="delete"
+                data-id="${prompt.id}"
+              >
+                Delete
+              </button>
+
+            </div>
+
+          </article>
+
+        `;
+
+      })
+      .join("");
 }
 
 
-/* =========================
+/* =========================================================
    PROMPT ACTIONS
-========================= */
+========================================================= */
 
 if (promptsContainer) {
-  promptsContainer.addEventListener("click", async (event) => {
-    const button = event.target.closest("[data-action]");
 
-    if (!button) return;
+  promptsContainer.addEventListener(
+    "click",
+    async (event) => {
 
-    const action = button.dataset.action;
-    const id = button.dataset.id;
-
-    const prompt = savedPrompts.find(
-      (item) => item.id === id
-    );
-
-    if (!prompt) return;
+      const button =
+        event.target.closest(
+          "[data-action]"
+        );
 
 
-    if (action === "open") {
-      openPrompt(prompt);
-      return;
-    }
+      if (!button) return;
 
 
-    if (action === "copy") {
-      try {
-        await navigator.clipboard.writeText(prompt.content);
-        showToast("Prompt copied");
-      } catch (error) {
-        console.error(error);
-        showToast("Copy failed");
+      const action =
+        button.dataset.action;
+
+      const id =
+        button.dataset.id;
+
+
+      const prompt =
+        savedPrompts.find(
+          (item) =>
+            item.id === id
+        );
+
+
+      if (!prompt) return;
+
+
+      if (action === "open") {
+
+        openPrompt(prompt);
+
+        return;
       }
 
-      return;
-    }
+
+      if (action === "copy") {
+
+        try {
+
+          await navigator.clipboard.writeText(
+            prompt.content
+          );
+
+          showToast(
+            "Prompt copied"
+          );
+
+        } catch (error) {
+
+          console.error(error);
+
+          showToast(
+            "Copy failed"
+          );
+
+        }
+
+        return;
+      }
 
 
-    if (action === "delete") {
-      await deletePrompt(id);
+      if (action === "delete") {
+
+        await deletePrompt(id);
+
+      }
+
     }
-  });
+  );
+
 }
 
 
-/* =========================
+/* =========================================================
    OPEN PROMPT
-========================= */
+========================================================= */
 
 function openPrompt(prompt) {
-  currentPrompt = prompt.content;
-  currentEditingId = prompt.id;
+
+  currentPrompt =
+    prompt.content;
+
+  currentEditingId =
+    prompt.id;
+
 
   if (ideaInput) {
-    ideaInput.value = prompt.title;
+
+    ideaInput.value =
+      prompt.title;
+
     updateCharacterCount();
+
   }
+
 
   if (projectType) {
-    projectType.value = prompt.project_type || "";
+
+    projectType.value =
+      prompt.project_type || "";
+
   }
+
 
   if (styleInput) {
-    styleInput.value = prompt.style || "";
+
+    styleInput.value =
+      prompt.style || "";
+
   }
+
 
   if (technologyInput) {
-    technologyInput.value = prompt.technology || "";
+
+    technologyInput.value =
+      prompt.technology || "";
+
   }
+
 
   if (detailLevel) {
-    detailLevel.value = prompt.detail_level || "standard";
+
+    detailLevel.value =
+      prompt.detail_level ||
+      "standard";
+
   }
+
 
   if (output) {
-    output.textContent = prompt.content;
+
+    output.textContent =
+      prompt.content;
+
   }
 
+
   if (outputTitle) {
-    outputTitle.value = prompt.title || "Untitled Prompt";
+
+    outputTitle.value =
+      prompt.title ||
+      "Untitled Prompt";
+
   }
+
 
   showPage("home");
 
-  showToast("Prompt opened");
+  showToast(
+    "Prompt opened"
+  );
 }
 
 
-/* =========================
+/* =========================================================
    DELETE PROMPT
-========================= */
+========================================================= */
 
 async function deletePrompt(id) {
+
   if (!currentUser) return;
 
-  const { error } = await supabaseClient
+
+  const {
+    error
+  } = await supabaseClient
     .from("prompts")
     .delete()
-    .eq("id", id)
-    .eq("user_id", currentUser.id);
+    .eq(
+      "id",
+      id
+    )
+    .eq(
+      "user_id",
+      currentUser.id
+    );
+
 
   if (error) {
-    console.error("Delete prompt error:", error);
-    showToast("Could not delete prompt");
+
+    console.error(
+      "Delete prompt error:",
+      error
+    );
+
+    showToast(
+      "Could not delete prompt"
+    );
+
     return;
   }
 
-  if (currentEditingId === id) {
-    currentEditingId = null;
+
+  if (
+    currentEditingId === id
+  ) {
+
+    currentEditingId =
+      null;
+
   }
+
 
   await loadPrompts();
 
-  showToast("Prompt deleted");
+
+  showToast(
+    "Prompt deleted"
+  );
 }
 
 
-/* =========================
+/* =========================================================
    PROMPT COUNT
-========================= */
+========================================================= */
 
 function updatePromptCount() {
+
   if (promptCount) {
-    promptCount.textContent = savedPrompts.length;
+
+    promptCount.textContent =
+      savedPrompts.length;
+
   }
 }
 
 
-/* =========================
-   SUPABASE - LOAD PROFILE
-========================= */
+/* =========================================================
+   LOAD PROFILE
+========================================================= */
 
 async function loadProfile() {
+
   if (!currentUser) return;
 
-  const { data, error } = await supabaseClient
+  if (!supabaseClient) return;
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient
     .from("profiles")
     .select("*")
-    .eq("id", currentUser.id)
+    .eq(
+      "id",
+      currentUser.id
+    )
     .maybeSingle();
 
 
   if (error) {
-    console.error("Load profile error:", error);
-    showToast("Could not load profile");
+
+    console.error(
+      "Load profile error:",
+      error
+    );
+
     return;
   }
 
 
   if (data) {
+
     profile = data;
+
   } else {
+
     profile = {
-      id: currentUser.id,
+
+      id:
+        currentUser.id,
+
       first_name:
-        currentUser.user_metadata?.display_name || "",
-      last_name: "",
-      bio: ""
+        currentUser
+          .user_metadata
+          ?.display_name ||
+        "",
+
+      last_name:
+        "",
+
+      bio:
+        "",
+
+      avatar_url:
+        ""
+
     };
 
-    await supabaseClient
+
+    const {
+      error:
+        createProfileError
+    } = await supabaseClient
       .from("profiles")
       .upsert(
         profile,
@@ -1004,70 +1705,123 @@ async function loadProfile() {
           onConflict: "id"
         }
       );
+
+
+    if (createProfileError) {
+
+      console.error(
+        "Create profile error:",
+        createProfileError
+      );
+
+    }
+
   }
+
 
   loadProfileIntoUI();
 }
 
 
-/* =========================
+/* =========================================================
    PROFILE UI
-========================= */
+========================================================= */
 
 function loadProfileIntoUI() {
+
   if (!currentUser) return;
 
+
   if (profileName) {
-    profileName.value = getProfileName();
+
+    profileName.value =
+      getProfileName();
+
   }
+
 
   if (profileBio) {
-    profileBio.value = profile.bio || "";
+
+    profileBio.value =
+      profile.bio || "";
+
   }
 
+
   if (accountEmail) {
+
     accountEmail.textContent =
       currentUser.email || "";
+
   }
+
 
   updatePromptCount();
 }
 
 
-/* =========================
+/* =========================================================
    SAVE PROFILE
-========================= */
+========================================================= */
 
 async function saveProfile() {
+
   if (!currentUser) {
-    showToast("Please sign in first");
+
+    showToast(
+      "Please sign in first"
+    );
+
     return;
   }
 
 
-  const name = profileName?.value.trim() || "";
-  const bio = profileBio?.value.trim() || "";
+  const name =
+    profileName?.value.trim() ||
+    "";
+
+  const bio =
+    profileBio?.value.trim() ||
+    "";
 
 
-  const parts = name
-    .split(/\s+/)
-    .filter(Boolean);
+  const parts =
+    name
+      .split(/\s+/)
+      .filter(Boolean);
 
 
-  const firstName = parts.shift() || "";
-  const lastName = parts.join(" ");
+  const firstName =
+    parts.shift() || "";
+
+  const lastName =
+    parts.join(" ");
 
 
   const profileData = {
-    id: currentUser.id,
-    first_name: firstName,
-    last_name: lastName,
-    bio: bio,
-    updated_at: new Date().toISOString()
+
+    id:
+      currentUser.id,
+
+    first_name:
+      firstName,
+
+    last_name:
+      lastName,
+
+    bio:
+      bio,
+
+    updated_at:
+      new Date().toISOString()
+
   };
 
 
-  const { data, error } = await supabaseClient
+  const {
+    data,
+    error
+  } = await supabaseClient
     .from("profiles")
     .upsert(
       profileData,
@@ -1080,9 +1834,15 @@ async function saveProfile() {
 
 
   if (error) {
-    console.error("Profile save error:", error);
 
-    showToast("Could not save profile");
+    console.error(
+      "Profile save error:",
+      error
+    );
+
+    showToast(
+      "Could not save profile"
+    );
 
     return;
   }
@@ -1092,144 +1852,151 @@ async function saveProfile() {
 
   loadProfileIntoUI();
 
-  showToast("Profile saved successfully");
+  showToast(
+    "Profile saved successfully"
+  );
 }
 
 
 if (saveProfileButton) {
+
   saveProfileButton.addEventListener(
     "click",
     saveProfile
   );
+
 }
 
 
-/* =========================
+/* =========================================================
    LOGOUT
-========================= */
+========================================================= */
 
 async function logout() {
-  const { error } =
+
+  if (!supabaseClient) return;
+
+
+  const {
+    error
+  } =
     await supabaseClient.auth.signOut();
 
+
   if (error) {
-    console.error("Logout error:", error);
-    showToast("Could not log out");
+
+    console.error(
+      "Logout error:",
+      error
+    );
+
+    showToast(
+      "Could not log out"
+    );
+
     return;
   }
 
+
   currentUser = null;
   currentSession = null;
+
   savedPrompts = [];
+
   currentPrompt = "";
+
   currentEditingId = null;
 
-  showToast("Logged out");
+  profile = {
+    id: "",
+    first_name: "",
+    last_name: "",
+    bio: "",
+    avatar_url: ""
+  };
+
+  updatePromptCount();
+
+  openAuthModal();
+
+  showToast(
+    "Logged out"
+  );
 }
 
 
 if (logoutButton) {
+
   logoutButton.addEventListener(
     "click",
     logout
   );
+
 }
 
 
-/* =========================
-   AUTH MODAL
-========================= */
-
-function openAuthModal() {
-  if (!authModal) return;
-
-  authModal.classList.add("active");
-  document.body.classList.add("auth-open");
-}
-
-
-function closeAuthModal() {
-  if (!authModal) return;
-
-  authModal.classList.remove("active");
-  document.body.classList.remove("auth-open");
-}
-
-
-function setAuthMode(mode) {
-  authMode = mode;
-
-  const isSignUp = mode === "signup";
-
-
-  if (authSignInTab) {
-    authSignInTab.classList.toggle(
-      "active",
-      !isSignUp
-    );
-  }
-
-
-  if (authSignUpTab) {
-    authSignUpTab.classList.toggle(
-      "active",
-      isSignUp
-    );
-  }
-
-
-  if (authDisplayName) {
-    authDisplayName.style.display =
-      isSignUp ? "" : "none";
-  }
-
-
-  if (authSubmitButton) {
-    authSubmitButton.textContent =
-      isSignUp
-        ? "Create Account"
-        : "Sign In";
-  }
-
-
-  setAuthMessage("");
-}
-
+/* =========================================================
+   AUTH TABS
+========================================================= */
 
 if (authSignInTab) {
+
   authSignInTab.addEventListener(
     "click",
-    () => setAuthMode("signin")
+    () => {
+      setAuthMode("signin");
+    }
   );
+
 }
 
 
 if (authSignUpTab) {
+
   authSignUpTab.addEventListener(
     "click",
-    () => setAuthMode("signup")
+    () => {
+      setAuthMode("signup");
+    }
   );
+
 }
 
 
-/* =========================
+/* =========================================================
    AUTH SUBMIT
-========================= */
+========================================================= */
 
 async function handleAuthSubmit(event) {
+
   event.preventDefault();
 
+
+  if (!supabaseClient) {
+
+    showToast(
+      "Supabase is not available"
+    );
+
+    return;
+  }
+
+
   const email =
-    authEmail?.value.trim() || "";
+    authEmail?.value.trim() ||
+    "";
 
   const password =
-    authPassword?.value || "";
+    authPassword?.value ||
+    "";
 
   const displayName =
-    authDisplayName?.value.trim() || "";
+    authDisplayName?.value.trim() ||
+    "";
 
 
   if (!email || !password) {
+
     setAuthMessage(
       "Enter your email and password.",
       "error"
@@ -1243,6 +2010,7 @@ async function handleAuthSubmit(event) {
     authMode === "signup" &&
     !displayName
   ) {
+
     setAuthMessage(
       "Enter your display name.",
       "error"
@@ -1253,7 +2021,10 @@ async function handleAuthSubmit(event) {
 
 
   if (authSubmitButton) {
-    authSubmitButton.disabled = true;
+
+    authSubmitButton.disabled =
+      true;
+
     authSubmitButton.textContent =
       authMode === "signup"
         ? "Creating..."
@@ -1266,18 +2037,31 @@ async function handleAuthSubmit(event) {
 
   try {
 
-    if (authMode === "signup") {
+    /* =====================
+       SIGN UP
+    ===================== */
 
-      const { data, error } =
-        await supabaseClient.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              display_name: displayName
+    if (
+      authMode === "signup"
+    ) {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth.signUp(
+          {
+            email,
+            password,
+
+            options: {
+              data: {
+                display_name:
+                  displayName
+              }
             }
           }
-        });
+        );
 
 
       if (error) {
@@ -1286,11 +2070,12 @@ async function handleAuthSubmit(event) {
 
 
       /*
-        If email confirmation is enabled,
-        Supabase may return a user without a session.
+        Email confirmation enabled:
+        Supabase returns no session.
       */
 
       if (!data.session) {
+
         setAuthMessage(
           "Account created. Check your email to confirm your account, then sign in.",
           "success"
@@ -1300,232 +2085,371 @@ async function handleAuthSubmit(event) {
       }
 
 
-currentSession = data.session;
-currentUser = data.user;
+      currentSession =
+        data.session;
 
-closeAuthModal();
-showPage("home");
+      currentUser =
+        data.user;
 
-showToast("Account created successfully");
 
-loadProfile().catch((error) => {
-  console.error("Background profile load error:", error);
-});
+      closeAuthModal();
 
-loadPrompts().catch((error) => {
-  console.error("Background prompts load error:", error);
-});
-    } else {
+      showPage("home");
 
-      const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
+      showToast(
+        "Account created successfully"
+      );
+
+
+      setTimeout(() => {
+
+        loadProfile().catch(
+          console.error
+        );
+
+        loadPrompts().catch(
+          console.error
+        );
+
+      }, 0);
+
+
+      return;
+    }
+
+
+    /* =====================
+       SIGN IN
+    ===================== */
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signInWithPassword(
+        {
           email,
           password
-        });
+        }
+      );
 
 
-      if (error) {
-        throw error;
-      }
+    if (error) {
+      throw error;
+    }
 
 
-currentSession = data.session;
-currentUser = data.user;
+    currentSession =
+      data.session;
 
-closeAuthModal();
-showPage("home");
+    currentUser =
+      data.user;
 
-showToast("Signed in successfully");
 
-loadProfile().catch((error) => {
-  console.error("Background profile load error:", error);
-});
+    /*
+      IMPORTANT:
+      Close auth immediately.
+    */
 
-loadPrompts().catch((error) => {
-  console.error("Background prompts load error:", error);
-});
+    closeAuthModal();
+
+    showPage("home");
+
+    showToast(
+      "Signed in successfully"
+    );
+
+
+    /*
+      Load private data after
+      the UI is already unlocked.
+    */
+
+    setTimeout(() => {
+
+      loadProfile().catch(
+        console.error
+      );
+
+      loadPrompts().catch(
+        console.error
+      );
+
+    }, 0);
 
 
   } catch (error) {
 
-    console.error("Authentication error:", error);
+    console.error(
+      "Authentication error:",
+      error
+    );
+
 
     setAuthMessage(
-      error.message || "Authentication failed.",
+      error?.message ||
+        "Authentication failed.",
       "error"
     );
 
   } finally {
 
     if (authSubmitButton) {
-      authSubmitButton.disabled = false;
+
+      authSubmitButton.disabled =
+        false;
 
       authSubmitButton.textContent =
         authMode === "signup"
           ? "Create Account"
           : "Sign In";
+
     }
+
   }
 }
 
 
 if (authForm) {
+
   authForm.addEventListener(
     "submit",
     handleAuthSubmit
   );
+
 }
 
 
-/* =========================
-   AUTH STATE
-========================= */
-
-async function handleAuthStateChange(session) {
-  currentSession = session;
-  currentUser = session?.user || null;
-
-
-  if (currentUser) {
-
-    closeAuthModal();
-
-    await loadProfile();
-    await loadPrompts();
-
-  } else {
-
-    openAuthModal();
-
-    savedPrompts = [];
-
-    currentPrompt = "";
-    currentEditingId = null;
-
-    updatePromptCount();
-  }
-}
-
-
-/* =========================
+/* =========================================================
    TITLE EDIT
-========================= */
+========================================================= */
 
 if (titleEditButton) {
+
   titleEditButton.addEventListener(
     "click",
     () => {
+
       if (!outputTitle) return;
 
       outputTitle.focus();
+
       outputTitle.select();
+
     }
   );
+
 }
 
 
-/* =========================
+/* =========================================================
    KEYBOARD SHORTCUTS
-========================= */
+========================================================= */
 
 document.addEventListener(
   "keydown",
   (event) => {
 
     if (
-      (event.ctrlKey || event.metaKey) &&
-      event.key.toLowerCase() === "enter"
+      (event.ctrlKey ||
+        event.metaKey) &&
+      event.key.toLowerCase() ===
+        "enter"
     ) {
+
       event.preventDefault();
+
       generatePrompt();
+
     }
 
 
     if (
       event.key === "/" &&
-      document.activeElement !== ideaInput &&
-      document.activeElement?.tagName !== "INPUT" &&
-      document.activeElement?.tagName !== "TEXTAREA"
+      document.activeElement !==
+        ideaInput &&
+      document.activeElement?.tagName !==
+        "INPUT" &&
+      document.activeElement?.tagName !==
+        "TEXTAREA"
     ) {
+
       event.preventDefault();
 
       if (ideaInput) {
         ideaInput.focus();
       }
+
     }
+
   }
 );
 
 
-/* =========================
-   INITIALIZATION
-========================= */
+/* =========================================================
+   AUTH STATE
+========================================================= */
 
-async function initApp() {
+function registerAuthListener() {
 
-  updateCharacterCount();
+  if (!supabaseClient) return;
 
-  setAuthMode("signin");
-
-
-  const {
-    data: {
-      session
-    }
-  } = await supabaseClient.auth.getSession();
-
-
-  currentSession = session;
-  currentUser = session?.user || null;
-
-
-  if (currentUser) {
-
-    closeAuthModal();
-
-    await loadProfile();
-    await loadPrompts();
-
-  } else {
-
-    openAuthModal();
-
-  }
-
-
-  /*
-    Listen for future login/logout changes.
-  */
 
   supabaseClient.auth.onAuthStateChange(
-    async (_event, session) => {
+    (_event, session) => {
 
-      currentSession = session;
-      currentUser = session?.user || null;
+      /*
+        Do NOT call Supabase database
+        functions directly inside this
+        callback.
+
+        Only update local state here.
+      */
+
+      currentSession =
+        session;
+
+      currentUser =
+        session?.user || null;
 
 
       if (currentUser) {
 
         closeAuthModal();
 
-        await loadProfile();
-        await loadPrompts();
+        /*
+          Load database data outside
+          the auth callback.
+        */
+
+        setTimeout(() => {
+
+          loadProfile().catch(
+            console.error
+          );
+
+          loadPrompts().catch(
+            console.error
+          );
+
+        }, 0);
 
       } else {
 
-        openAuthModal();
-
         savedPrompts = [];
 
+        currentPrompt = "";
+
+        currentEditingId = null;
+
         updatePromptCount();
+
+        openAuthModal();
+
       }
+
     }
   );
 }
 
 
-/* =========================
-   START
-========================= */
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+async function initApp() {
+
+  /*
+    First make sure Supabase exists.
+  */
+
+  if (!initSupabase()) {
+    return;
+  }
+
+
+  updateCharacterCount();
+
+  setAuthMode("signin");
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.getSession();
+
+
+    if (error) {
+
+      console.error(
+        "Get session error:",
+        error
+      );
+
+      openAuthModal();
+
+      return;
+    }
+
+
+    currentSession =
+      data.session;
+
+    currentUser =
+      data.session?.user ||
+      null;
+
+
+    if (currentUser) {
+
+      closeAuthModal();
+
+      /*
+        Load data after initial
+        page state is ready.
+      */
+
+      setTimeout(() => {
+
+        loadProfile().catch(
+          console.error
+        );
+
+        loadPrompts().catch(
+          console.error
+        );
+
+      }, 0);
+
+    } else {
+
+      openAuthModal();
+
+    }
+
+
+    registerAuthListener();
+
+
+  } catch (error) {
+
+    console.error(
+      "App initialization error:",
+      error
+    );
+
+    openAuthModal();
+
+  }
+
+}
+
+
+/* =========================================================
+   START APP
+========================================================= */
 
 initApp();
