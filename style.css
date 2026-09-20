@@ -1307,3 +1307,330 @@ select option {
   }
 
 }
+/* =========================================
+   AUTH SYSTEM
+========================================= */
+
+.auth-gate {
+  position: fixed;
+  inset: 0;
+
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background:
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(109, 140, 255, 0.12),
+      transparent 40%
+    ),
+    rgba(5, 6, 10, 0.94);
+
+  backdrop-filter: blur(18px);
+
+  animation:
+    authFadeIn 0.3s ease;
+}
+
+.auth-gate.hidden {
+  display: none;
+}
+
+body.auth-locked {
+  overflow: hidden;
+}
+
+.auth-card {
+  width: min(
+    100%,
+    440px
+  );
+
+  padding: 32px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.1);
+
+  border-radius: 24px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(22, 24, 34, 0.96),
+      rgba(12, 14, 20, 0.96)
+    );
+
+  box-shadow:
+    0 35px 100px
+    rgba(0, 0, 0, 0.5);
+
+  backdrop-filter: blur(30px);
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 35px;
+
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.auth-heading {
+  margin-bottom: 25px;
+}
+
+.auth-heading h1 {
+  font-size: 32px;
+
+  letter-spacing: -1.5px;
+
+  margin-bottom: 9px;
+}
+
+.auth-heading p {
+  color: var(--muted);
+
+  font-size: 12px;
+
+  line-height: 1.7;
+}
+
+.auth-form .form-group {
+  margin-bottom: 16px;
+}
+
+.auth-submit {
+  width: 100%;
+
+  margin-top: 5px;
+
+  padding: 13px 16px;
+
+  border: 0;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--accent),
+      #7b61ff
+    );
+
+  color: white;
+
+  font: inherit;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 12px 35px
+    rgba(109, 140, 255, 0.2);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.auth-submit:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 16px 40px
+    rgba(109, 140, 255, 0.3);
+}
+
+.auth-submit:disabled {
+  opacity: 0.6;
+
+  cursor: wait;
+
+  transform: none;
+}
+
+.auth-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  margin-top: 22px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+}
+
+.auth-switch button {
+  border: 0;
+
+  background: transparent;
+
+  color: #9db0ff;
+
+  cursor: pointer;
+
+  font: inherit;
+
+  font-weight: 700;
+}
+
+.auth-switch button:hover {
+  color: white;
+}
+
+@keyframes authFadeIn {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+
+}
+
+
+/* =========================================
+   ACCOUNT EMAIL
+========================================= */
+
+.account-email {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  margin-bottom: 22px;
+
+  padding: 12px 14px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 11px;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+}
+
+.account-email span {
+  color: #697182;
+
+  font-size: 10px;
+}
+
+.account-email strong {
+  color: var(--muted-light);
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  word-break: break-all;
+}
+
+
+/* =========================================
+   PROFILE ACTIONS
+========================================= */
+
+.profile-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+.logout-button {
+  padding: 11px 17px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.1);
+
+  border-radius: 11px;
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  color: var(--muted-light);
+
+  font: inherit;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.logout-button:hover {
+  color: white;
+
+  background:
+    rgba(255, 255, 255, 0.07);
+}
+
+.logout-button:disabled {
+  opacity: 0.6;
+
+  cursor: wait;
+}
+
+
+/* =========================================
+   MOBILE AUTH
+========================================= */
+
+@media (max-width: 600px) {
+
+  .auth-gate {
+    padding: 16px;
+  }
+
+  .auth-card {
+    padding: 24px;
+
+    border-radius: 20px;
+  }
+
+  .auth-heading h1 {
+    font-size: 27px;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .profile-actions
+  .primary-small,
+  .profile-actions
+  .logout-button {
+    width: 100%;
+  }
+
+}
