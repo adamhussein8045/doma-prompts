@@ -1,18 +1,48 @@
 /* =========================================
    DOMA PROMPTS
-   V1 — Local Workspace
+   V2 — SUPABASE WORKSPACE
 ========================================= */
+
+
+/* =========================================
+   SUPABASE
+========================================= */
+
+const SUPABASE_URL =
+  "https://gpxatkpwdekurxjhtguc.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_onQaVtWk1QkFqpzN_Dzrsw_AoQ6tEBm";
+
+const {
+  createClient
+} = window.supabase;
+
+const supabaseClient =
+  createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 
 /* =========================================
    ELEMENTS
 ========================================= */
 
-const ideaInput = document.getElementById("idea");
-const projectType = document.getElementById("projectType");
-const styleInput = document.getElementById("style");
-const technology = document.getElementById("technology");
-const detail = document.getElementById("detail");
+const ideaInput =
+  document.getElementById("idea");
+
+const projectType =
+  document.getElementById("projectType");
+
+const styleInput =
+  document.getElementById("style");
+
+const technology =
+  document.getElementById("technology");
+
+const detail =
+  document.getElementById("detail");
 
 const generateButton =
   document.getElementById("generateButton");
@@ -68,6 +98,12 @@ const profileAvatar =
 const saveProfile =
   document.getElementById("saveProfile");
 
+const logoutButton =
+  document.getElementById("logoutButton");
+
+const accountEmail =
+  document.getElementById("accountEmail");
+
 const toast =
   document.getElementById("toast");
 
@@ -76,21 +112,68 @@ const toastMessage =
 
 
 /* =========================================
+   AUTH ELEMENTS
+========================================= */
+
+const authGate =
+  document.getElementById("authGate");
+
+const loginForm =
+  document.getElementById("loginForm");
+
+const signupForm =
+  document.getElementById("signupForm");
+
+const loginEmail =
+  document.getElementById("loginEmail");
+
+const loginPassword =
+  document.getElementById("loginPassword");
+
+const signupName =
+  document.getElementById("signupName");
+
+const signupEmail =
+  document.getElementById("signupEmail");
+
+const signupPassword =
+  document.getElementById("signupPassword");
+
+const authTitle =
+  document.getElementById("authTitle");
+
+const authDescription =
+  document.getElementById("authDescription");
+
+const authSwitchText =
+  document.getElementById("authSwitchText");
+
+const authSwitchButton =
+  document.getElementById("authSwitchButton");
+
+const loginButton =
+  document.getElementById("loginButton");
+
+const signupButton =
+  document.getElementById("signupButton");
+
+
+/* =========================================
    STATE
 ========================================= */
 
 let currentPrompt = "";
 
-let savedPrompts =
-  JSON.parse(
-    localStorage.getItem("doma_prompts") || "[]"
-  );
+let savedPrompts = [];
 
-let profile =
-  JSON.parse(
-    localStorage.getItem("doma_profile") ||
-    '{"name":"","bio":""}'
-  );
+let profile = {
+  name: "",
+  bio: ""
+};
+
+let currentUser = null;
+
+let currentSession = null;
 
 
 /* =========================================
@@ -111,57 +194,591 @@ const navLinks =
 
 function showPage(pageName) {
 
-  Object.values(pages).forEach(page => {
-    page.classList.remove("active-page");
-  });
+  Object.values(pages).forEach(
+    page => {
+
+      page.classList.remove(
+        "active-page"
+      );
+
+    }
+  );
+
 
   if (pages[pageName]) {
-    pages[pageName].classList.add("active-page");
+
+    pages[pageName].classList.add(
+      "active-page"
+    );
+
   }
+
 
   document
     .querySelectorAll(".nav-link")
     .forEach(link => {
-      link.classList.remove("active");
+
+      link.classList.remove(
+        "active"
+      );
+
     });
+
 
   document
     .querySelectorAll(
       `.nav-link[data-page="${pageName}"]`
     )
     .forEach(link => {
-      link.classList.add("active");
+
+      link.classList.add(
+        "active"
+      );
+
     });
+
 
   window.scrollTo({
     top: 0,
     behavior: "smooth"
   });
 
+
   if (pageName === "prompts") {
-    renderPrompts();
+
+    loadPrompts();
+
   }
 
+
   if (pageName === "profile") {
+
     loadProfile();
+
   }
+
 }
 
 
-navLinks.forEach(element => {
+navLinks.forEach(
+  element => {
 
-  element.addEventListener("click", event => {
+    element.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+
+        const page =
+          element.dataset.page;
+
+        showPage(page);
+
+      }
+    );
+
+  }
+);
+
+
+/* =========================================
+   AUTH MODE
+========================================= */
+
+let authMode = "login";
+
+
+function setAuthMode(mode) {
+
+  authMode = mode;
+
+
+  if (mode === "login") {
+
+    loginForm.classList.remove(
+      "hidden"
+    );
+
+    signupForm.classList.add(
+      "hidden"
+    );
+
+
+    authTitle.textContent =
+      "Welcome back.";
+
+
+    authDescription.textContent =
+      "Sign in to access your private prompt workspace.";
+
+
+    authSwitchText.textContent =
+      "Don't have an account?";
+
+
+    authSwitchButton.textContent =
+      "Create account";
+
+  } else {
+
+    loginForm.classList.add(
+      "hidden"
+    );
+
+    signupForm.classList.remove(
+      "hidden"
+    );
+
+
+    authTitle.textContent =
+      "Create your workspace.";
+
+
+    authDescription.textContent =
+      "Create a private account for your prompts and profile.";
+
+
+    authSwitchText.textContent =
+      "Already have an account?";
+
+
+    authSwitchButton.textContent =
+      "Sign in";
+
+  }
+
+}
+
+
+authSwitchButton.addEventListener(
+  "click",
+  () => {
+
+    setAuthMode(
+      authMode === "login"
+        ? "signup"
+        : "login"
+    );
+
+  }
+);
+
+
+/* =========================================
+   AUTH GATE
+========================================= */
+
+function showAuthGate() {
+
+  authGate.classList.remove(
+    "hidden"
+  );
+
+  document.body.classList.add(
+    "auth-locked"
+  );
+
+}
+
+
+function hideAuthGate() {
+
+  authGate.classList.add(
+    "hidden"
+  );
+
+  document.body.classList.remove(
+    "auth-locked"
+  );
+
+}
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+loginForm.addEventListener(
+  "submit",
+  async event => {
 
     event.preventDefault();
 
-    const page =
-      element.dataset.page;
 
-    showPage(page);
+    const email =
+      loginEmail.value.trim();
 
-  });
+    const password =
+      loginPassword.value;
 
-});
+
+    if (!email || !password) {
+
+      showToast(
+        "Enter your email and password."
+      );
+
+      return;
+
+    }
+
+
+    loginButton.disabled = true;
+
+    loginButton.textContent =
+      "Signing in...";
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+
+    loginButton.disabled = false;
+
+    loginButton.textContent =
+      "Sign In";
+
+
+    if (error) {
+
+      showToast(
+        error.message
+      );
+
+      return;
+
+    }
+
+
+    currentSession =
+      data.session;
+
+    currentUser =
+      data.user;
+
+
+    loginForm.reset();
+
+
+    await initializeUser();
+
+
+    showToast(
+      "Welcome back."
+    );
+
+  }
+);
+
+
+/* =========================================
+   SIGN UP
+========================================= */
+
+signupForm.addEventListener(
+  "submit",
+  async event => {
+
+    event.preventDefault();
+
+
+    const name =
+      signupName.value.trim();
+
+    const email =
+      signupEmail.value.trim();
+
+    const password =
+      signupPassword.value;
+
+
+    if (!name || !email || !password) {
+
+      showToast(
+        "Complete all fields."
+      );
+
+      return;
+
+    }
+
+
+    if (password.length < 6) {
+
+      showToast(
+        "Password must be at least 6 characters."
+      );
+
+      return;
+
+    }
+
+
+    signupButton.disabled = true;
+
+    signupButton.textContent =
+      "Creating...";
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signUp({
+
+        email,
+
+        password,
+
+        options: {
+
+          data: {
+
+            first_name: name
+
+          }
+
+        }
+
+      });
+
+
+    signupButton.disabled = false;
+
+    signupButton.textContent =
+      "Create Account";
+
+
+    if (error) {
+
+      showToast(
+        error.message
+      );
+
+      return;
+
+    }
+
+
+    /*
+      If email confirmation is enabled,
+      Supabase may create the account
+      without creating a session.
+    */
+
+    if (!data.session) {
+
+      signupForm.reset();
+
+      setAuthMode("login");
+
+      showToast(
+        "Account created. Check your email to confirm your account."
+      );
+
+      return;
+
+    }
+
+
+    currentSession =
+      data.session;
+
+    currentUser =
+      data.user;
+
+
+    signupForm.reset();
+
+
+    await initializeUser();
+
+
+    showToast(
+      "Account created successfully."
+    );
+
+  }
+);
+
+
+/* =========================================
+   AUTH STATE
+========================================= */
+
+supabaseClient.auth.onAuthStateChange(
+  async (
+    event,
+    session
+  ) => {
+
+    currentSession =
+      session;
+
+    currentUser =
+      session?.user || null;
+
+
+    if (session) {
+
+      await initializeUser();
+
+    } else {
+
+      currentUser = null;
+
+      savedPrompts = [];
+
+      profile = {
+        name: "",
+        bio: ""
+      };
+
+      updatePromptCount();
+
+      showAuthGate();
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   INITIALIZE USER
+========================================= */
+
+async function initializeUser() {
+
+  if (!currentUser) {
+    return;
+  }
+
+
+  hideAuthGate();
+
+
+  accountEmail.textContent =
+    currentUser.email || "—";
+
+
+  await ensureProfile();
+
+
+  await loadPrompts();
+
+
+  loadProfile();
+
+}
+
+
+/* =========================================
+   ENSURE PROFILE
+========================================= */
+
+async function ensureProfile() {
+
+  if (!currentUser) {
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id", currentUser.id)
+      .maybeSingle();
+
+
+  if (error) {
+
+    console.error(
+      "Profile load error:",
+      error
+    );
+
+    return;
+
+  }
+
+
+  if (data) {
+
+    profile = {
+
+      name:
+        data.first_name || "",
+
+      bio:
+        data.bio || ""
+
+    };
+
+    return;
+
+  }
+
+
+  const name =
+    currentUser.user_metadata
+      ?.first_name || "";
+
+
+  const {
+    data: createdProfile,
+    error: createError
+  } =
+    await supabaseClient
+      .from("profiles")
+      .insert({
+
+        id: currentUser.id,
+
+        first_name:
+          name,
+
+        last_name:
+          ""
+
+      })
+      .select()
+      .single();
+
+
+  if (createError) {
+
+    console.error(
+      "Profile creation error:",
+      createError
+    );
+
+    return;
+
+  }
+
+
+  profile = {
+
+    name:
+      createdProfile.first_name || "",
+
+    bio:
+      createdProfile.bio || ""
+
+  };
+
+}
 
 
 /* =========================================
@@ -178,6 +795,7 @@ function updateCharacterCount() {
 
   const count =
     ideaInput.value.length;
+
 
   characterCount.textContent =
     `${count} characters`;
@@ -214,6 +832,7 @@ generateButton.addEventListener(
     const idea =
       ideaInput.value.trim();
 
+
     if (!idea) {
 
       showToast(
@@ -223,7 +842,9 @@ generateButton.addEventListener(
       ideaInput.focus();
 
       return;
+
     }
+
 
     generatePrompt();
 
@@ -267,15 +888,19 @@ function generatePrompt() {
     "hidden"
   );
 
+
   generatedOutput.classList.remove(
     "hidden"
   );
 
+
   outputStatus.textContent =
     "Generated";
 
+
   outputStatus.style.color =
     "#4ade80";
+
 
   promptTitle.value =
     createTitle(idea);
@@ -329,9 +954,7 @@ ${tech}
 `;
 
 
-  if (
-    level === "Quick"
-  ) {
+  if (level === "Quick") {
 
     prompt +=
 `OBJECTIVE
@@ -353,9 +976,7 @@ Provide the implementation clearly and explain the important decisions.
   }
 
 
-  else if (
-    level === "Standard"
-  ) {
+  else if (level === "Standard") {
 
     prompt +=
 `OBJECTIVE
@@ -397,9 +1018,7 @@ Return the complete solution with the required code and a short explanation.
   }
 
 
-  else if (
-    level === "Professional"
-  ) {
+  else if (level === "Professional") {
 
     prompt +=
 `OBJECTIVE
@@ -616,9 +1235,13 @@ function createTitle(
       .replace(/\s+/g, " ")
       .trim();
 
+
   if (clean.length <= 38) {
+
     return clean;
+
   }
+
 
   return (
     clean.substring(0, 38) +
@@ -643,13 +1266,16 @@ copyButton.addEventListener(
       );
 
       return;
+
     }
+
 
     try {
 
       await navigator.clipboard.writeText(
         currentPrompt
       );
+
 
       showToast(
         "Prompt copied."
@@ -682,7 +1308,9 @@ improveButton.addEventListener(
       );
 
       return;
+
     }
+
 
     currentPrompt =
       currentPrompt
@@ -698,7 +1326,7 @@ improveButton.addEventListener(
 
     currentPrompt +=
 `
-
+    
 FINAL IMPROVEMENT PASS
 
 Before producing the final result:
@@ -716,8 +1344,10 @@ Before producing the final result:
     promptText.textContent =
       currentPrompt;
 
+
     outputStatus.textContent =
       "Improved";
+
 
     showToast(
       "Prompt improved."
@@ -742,7 +1372,9 @@ regenerateButton.addEventListener(
       );
 
       return;
+
     }
+
 
     generatePrompt();
 
@@ -751,12 +1383,25 @@ regenerateButton.addEventListener(
 
 
 /* =========================================
-   SAVE
+   SAVE PROMPT
 ========================================= */
 
 saveButton.addEventListener(
   "click",
-  () => {
+  async () => {
+
+    if (!currentUser) {
+
+      showToast(
+        "Please sign in first."
+      );
+
+      showAuthGate();
+
+      return;
+
+    }
+
 
     if (!currentPrompt) {
 
@@ -765,6 +1410,7 @@ saveButton.addEventListener(
       );
 
       return;
+
     }
 
 
@@ -773,84 +1419,229 @@ saveButton.addEventListener(
       "Untitled Prompt";
 
 
-    const existingIndex =
-      savedPrompts.findIndex(
-        prompt =>
-          prompt.id === window.currentEditingId
-      );
+    const editingId =
+      window.currentEditingId || null;
 
 
-    const promptData = {
+    saveButton.disabled = true;
 
-      id:
-        window.currentEditingId ||
-        Date.now().toString(),
-
-      title,
-
-      content:
-        currentPrompt,
-
-      projectType:
-        projectType.value,
-
-      style:
-        styleInput.value,
-
-      technology:
-        technology.value,
-
-      detail:
-        detail.value,
-
-      createdAt:
-        existingIndex !== -1
-          ? savedPrompts[existingIndex].createdAt
-          : new Date().toISOString(),
-
-      updatedAt:
-        new Date().toISOString()
-
-    };
+    saveButton.textContent =
+      "Saving...";
 
 
-    if (
-      existingIndex !== -1
-    ) {
+    let result;
 
-      savedPrompts[
-        existingIndex
-      ] = promptData;
+
+    if (editingId) {
+
+      result =
+        await supabaseClient
+          .from("prompts")
+          .update({
+
+            title,
+
+            content:
+              currentPrompt,
+
+            project_type:
+              projectType.value,
+
+            style:
+              styleInput.value,
+
+            technology:
+              technology.value,
+
+            detail_level:
+              detail.value
+
+          })
+          .eq(
+            "id",
+            editingId
+          )
+          .eq(
+            "user_id",
+            currentUser.id
+          )
+          .select()
+          .single();
 
     } else {
 
-      savedPrompts.unshift(
-        promptData
-      );
+      result =
+        await supabaseClient
+          .from("prompts")
+          .insert({
+
+            user_id:
+              currentUser.id,
+
+            title,
+
+            content:
+              currentPrompt,
+
+            project_type:
+              projectType.value,
+
+            style:
+              styleInput.value,
+
+            technology:
+              technology.value,
+
+            detail_level:
+              detail.value
+
+          })
+          .select()
+          .single();
 
     }
 
 
-    localStorage.setItem(
-      "doma_prompts",
-      JSON.stringify(
-        savedPrompts
-      )
-    );
+    saveButton.disabled = false;
+
+    saveButton.textContent =
+      "Save Prompt";
+
+
+    if (result.error) {
+
+      console.error(
+        result.error
+      );
+
+      showToast(
+        "Could not save prompt."
+      );
+
+      return;
+
+    }
 
 
     window.currentEditingId =
-      promptData.id;
+      result.data.id;
 
 
-    updatePromptCount();
+    await loadPrompts();
+
 
     showToast(
-      "Prompt saved."
+      editingId
+        ? "Prompt updated."
+        : "Prompt saved."
     );
 
   }
 );
+
+
+/* =========================================
+   LOAD PROMPTS
+========================================= */
+
+async function loadPrompts() {
+
+  if (!currentUser) {
+
+    savedPrompts = [];
+
+    updatePromptCount();
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("prompts")
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Prompts load error:",
+      error
+    );
+
+    showToast(
+      "Could not load your prompts."
+    );
+
+    return;
+
+  }
+
+
+  savedPrompts =
+    (data || []).map(
+      prompt => ({
+
+        id:
+          prompt.id,
+
+        title:
+          prompt.title,
+
+        content:
+          prompt.content,
+
+        projectType:
+          prompt.project_type,
+
+        style:
+          prompt.style,
+
+        technology:
+          prompt.technology,
+
+        detail:
+          prompt.detail_level,
+
+        createdAt:
+          prompt.created_at,
+
+        updatedAt:
+          prompt.updated_at
+
+      })
+    );
+
+
+  updatePromptCount();
+
+
+  if (
+    document
+      .getElementById("promptsPage")
+      .classList
+      .contains("active-page")
+  ) {
+
+    renderPrompts();
+
+  }
+
+}
 
 
 /* =========================================
@@ -901,7 +1692,9 @@ function renderPrompts() {
         () => showPage("home")
       );
 
+
     return;
+
   }
 
 
@@ -914,6 +1707,7 @@ function renderPrompts() {
             new Date(
               prompt.updatedAt
             ).toLocaleDateString();
+
 
           const preview =
             escapeHTML(
@@ -933,11 +1727,13 @@ function renderPrompts() {
               <div class="prompt-card-top">
 
                 <div>
+
                   <h3>
                     ${escapeHTML(
                       prompt.title
                     )}
                   </h3>
+
                 </div>
 
                 <span class="prompt-date">
@@ -989,27 +1785,30 @@ function renderPrompts() {
     .querySelectorAll(
       "[data-action]"
     )
-    .forEach(button => {
+    .forEach(
+      button => {
 
-      button.addEventListener(
-        "click",
-        () => {
+        button.addEventListener(
+          "click",
+          () => {
 
-          const action =
-            button.dataset.action;
+            const action =
+              button.dataset.action;
 
-          const id =
-            button.dataset.id;
+            const id =
+              button.dataset.id;
 
-          handlePromptAction(
-            action,
-            id
-          );
 
-        }
-      );
+            handlePromptAction(
+              action,
+              id
+            );
 
-    });
+          }
+        );
+
+      }
+    );
 
 }
 
@@ -1018,7 +1817,7 @@ function renderPrompts() {
    PROMPT ACTIONS
 ========================================= */
 
-function handlePromptAction(
+async function handlePromptAction(
   action,
   id
 ) {
@@ -1038,22 +1837,32 @@ function handlePromptAction(
 
     openPrompt(prompt);
 
+    return;
+
   }
 
 
   if (action === "copy") {
 
-    navigator.clipboard
-      .writeText(
+    try {
+
+      await navigator.clipboard.writeText(
         prompt.content
-      )
-      .then(() => {
+      );
 
-        showToast(
-          "Prompt copied."
-        );
+      showToast(
+        "Prompt copied."
+      );
 
-      });
+    } catch {
+
+      showToast(
+        "Copy failed."
+      );
+
+    }
+
+    return;
 
   }
 
@@ -1065,8 +1874,40 @@ function handlePromptAction(
         "Delete this prompt?"
       );
 
+
     if (!confirmed) {
       return;
+    }
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("prompts")
+        .delete()
+        .eq(
+          "id",
+          id
+        )
+        .eq(
+          "user_id",
+          currentUser.id
+        );
+
+
+    if (error) {
+
+      console.error(
+        error
+      );
+
+      showToast(
+        "Could not delete prompt."
+      );
+
+      return;
+
     }
 
 
@@ -1076,15 +1917,18 @@ function handlePromptAction(
       );
 
 
-    localStorage.setItem(
-      "doma_prompts",
-      JSON.stringify(
-        savedPrompts
-      )
-    );
+    if (
+      window.currentEditingId === id
+    ) {
+
+      window.currentEditingId =
+        null;
+
+    }
 
 
     renderPrompts();
+
 
     showToast(
       "Prompt deleted."
@@ -1110,23 +1954,30 @@ function openPrompt(
   ideaInput.value =
     prompt.title;
 
+
   projectType.value =
     prompt.projectType;
+
 
   styleInput.value =
     prompt.style;
 
+
   technology.value =
     prompt.technology;
+
 
   detail.value =
     prompt.detail;
 
+
   currentPrompt =
     prompt.content;
 
+
   promptTitle.value =
     prompt.title;
+
 
   promptText.textContent =
     prompt.content;
@@ -1136,17 +1987,25 @@ function openPrompt(
     "hidden"
   );
 
+
   generatedOutput.classList.remove(
     "hidden"
   );
+
 
   outputStatus.textContent =
     "Saved";
 
 
+  outputStatus.style.color =
+    "#4ade80";
+
+
   updateCharacterCount();
 
+
   showPage("home");
+
 
   showToast(
     "Prompt opened."
@@ -1159,43 +2018,111 @@ function openPrompt(
    PROFILE
 ========================================= */
 
-function loadProfile() {
+async function loadProfile() {
+
+  if (!currentUser) {
+    return;
+  }
+
+
+  await ensureProfile();
+
 
   profileName.value =
     profile.name || "";
 
+
   profileBio.value =
     profile.bio || "";
+
 
   profileAvatar.textContent =
     getInitial(
       profile.name
     );
 
+
+  accountEmail.textContent =
+    currentUser.email || "—";
+
 }
 
 
 saveProfile.addEventListener(
   "click",
-  () => {
+  async () => {
+
+    if (!currentUser) {
+
+      showToast(
+        "Please sign in first."
+      );
+
+      return;
+
+    }
+
+
+    const name =
+      profileName.value.trim();
+
+    const bio =
+      profileBio.value.trim();
+
+
+    saveProfile.disabled = true;
+
+    saveProfile.textContent =
+      "Saving...";
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("profiles")
+        .upsert({
+
+          id:
+            currentUser.id,
+
+          first_name:
+            name,
+
+          bio:
+            bio
+
+        });
+
+
+    saveProfile.disabled = false;
+
+    saveProfile.textContent =
+      "Save Profile";
+
+
+    if (error) {
+
+      console.error(
+        error
+      );
+
+      showToast(
+        "Could not save profile."
+      );
+
+      return;
+
+    }
+
 
     profile = {
 
-      name:
-        profileName.value.trim(),
+      name,
 
-      bio:
-        profileBio.value.trim()
+      bio
 
     };
-
-
-    localStorage.setItem(
-      "doma_profile",
-      JSON.stringify(
-        profile
-      )
-    );
 
 
     profileAvatar.textContent =
@@ -1213,6 +2140,74 @@ saveProfile.addEventListener(
 
 
 /* =========================================
+   LOGOUT
+========================================= */
+
+logoutButton.addEventListener(
+  "click",
+  async () => {
+
+    logoutButton.disabled = true;
+
+    logoutButton.textContent =
+      "Logging out...";
+
+
+    const {
+      error
+    } =
+      await supabaseClient.auth.signOut();
+
+
+    logoutButton.disabled = false;
+
+    logoutButton.textContent =
+      "Log Out";
+
+
+    if (error) {
+
+      console.error(
+        error
+      );
+
+      showToast(
+        "Could not log out."
+      );
+
+      return;
+
+    }
+
+
+    currentUser = null;
+
+    currentSession = null;
+
+    savedPrompts = [];
+
+    profile = {
+      name: "",
+      bio: ""
+    };
+
+
+    updatePromptCount();
+
+    setAuthMode("login");
+
+    showAuthGate();
+
+
+    showToast(
+      "You have been logged out."
+    );
+
+  }
+);
+
+
+/* =========================================
    PROFILE INITIAL
 ========================================= */
 
@@ -1223,6 +2218,7 @@ function getInitial(
   if (!name) {
     return "D";
   }
+
 
   return name
     .trim()
@@ -1252,7 +2248,7 @@ function escapeHTML(
   value
 ) {
 
-  return value
+  return String(value)
     .replace(
       /&/g,
       "&amp;"
@@ -1290,6 +2286,7 @@ function showToast(
 
   toastMessage.textContent =
     message;
+
 
   toast.classList.add(
     "show"
@@ -1342,10 +2339,54 @@ editTitle.addEventListener(
    INITIALIZE
 ========================================= */
 
-updateCharacterCount();
+async function initializeApp() {
 
-updatePromptCount();
+  updateCharacterCount();
 
-loadProfile();
+  updatePromptCount();
 
-renderPrompts();
+  setAuthMode("login");
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.auth.getSession();
+
+
+  if (error) {
+
+    console.error(
+      "Session error:",
+      error
+    );
+
+    showAuthGate();
+
+    return;
+
+  }
+
+
+  currentSession =
+    data.session;
+
+  currentUser =
+    data.session?.user || null;
+
+
+  if (currentSession) {
+
+    await initializeUser();
+
+  } else {
+
+    showAuthGate();
+
+  }
+
+}
+
+
+initializeApp();
