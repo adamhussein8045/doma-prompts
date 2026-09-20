@@ -2065,3 +2065,66 @@ body.cursor-click::before {
     display: none;
   }
 }
+/* =========================================
+   DOMA PROMPTS — PREMIUM SELECT DROPDOWNS
+   ========================================= */
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-color: rgba(10, 13, 22, 0.95) !important;
+  color: #f5f7ff !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  outline: none !important;
+  box-shadow: none !important;
+
+  border-radius: 14px;
+}
+
+/* الاختيارات من الداخل */
+select option {
+  background: #0b0f18 !important;
+  color: #f5f7ff !important;
+
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+
+  padding: 12px;
+}
+
+/* الاختيار المحدد */
+select option:checked {
+  background: #151c2c !important;
+  color: #6d8cff !important;
+}
+
+/* عند التركيز */
+select:focus,
+select:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(109, 140, 255, 0.12) !important;
+  border-color: rgba(109, 140, 255, 0.35) !important;
+}
+
+/* السهم */
+select {
+  background-image:
+    linear-gradient(45deg, transparent 50%, #7d8cff 50%),
+    linear-gradient(135deg, #7d8cff 50%, transparent 50%) !important;
+
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50% !important;
+
+  background-size:
+    5px 5px,
+    5px 5px !important;
+
+  background-repeat: no-repeat !important;
+
+  padding-right: 42px !important;
+}
