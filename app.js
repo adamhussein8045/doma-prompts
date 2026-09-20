@@ -2408,3 +2408,80 @@ initApp();
     body.classList.remove("cursor-click");
   });
 })();
+/* =========================================
+   DOMA PROMPTS — LIVE ACCOUNT CHECK
+   Detect deleted Supabase users without refresh
+   ========================================= */
+
+let accountCheckTimer = null;
+
+async function checkCurrentAccount() {
+  if (!supabaseClient || !currentUser) return;
+
+  try {
+    const { data, error } = await supabaseClient.auth.getUser();
+
+    // User was deleted / session is no longer valid
+    if (error || !data?.user) {
+      console.log("Account is no longer available.");
+
+      currentUser = null;
+      currentSession = null;
+
+      // Clear local session data
+      localStorage.removeItem("doma_prompts_session");
+      localStorage.removeItem("doma_prompts_user");
+
+      // Sign out locally
+      await supabaseClient.auth.signOut({
+        scope: "local"
+      });
+
+      // Return to authentication screen
+      if (typeof showPage === "function") {
+        showPage("home");
+      }
+
+      if (typeof openAuthModal === "function") {
+        openAuthModal();
+      }
+
+      if (typeof setAuthMessage === "function") {
+        setAuthMessage(
+          "Your account is no longer available. Please sign in again.",
+          "error"
+        );
+      }
+
+      if (typeof showToast === "function") {
+        showToast("Your account was removed.");
+      }
+
+      stopAccountCheck();
+
+      return;
+    }
+
+    // Keep the local user object fresh
+    currentUser = data.user;
+
+  } catch (error) {
+    console.error("Account check failed:", error);
+  }
+}
+
+function startAccountCheck() {
+  stopAccountCheck();
+
+  // Check every 5 seconds
+  accountCheckTimer = setInterval(() => {
+    checkCurrentAccount();
+  }, 5000);
+}
+
+function stopAccountCheck() {
+  if (accountCheckTimer) {
+    clearInterval(accountCheckTimer);
+    accountCheckTimer = null;
+  }
+}
